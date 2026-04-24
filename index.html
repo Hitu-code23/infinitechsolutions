@@ -1,286 +1,849 @@
 <!DOCTYPE html>
-
-<html class="dark" lang="en"><head>
+<html lang="en">
+<head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Flux Creators | High-Fidelity Creative Lab</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&amp;family=Instrument+Serif:ital@0;1&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "surface": "#141312",
-                        "tertiary-container": "#dcdad9",
-                        "on-tertiary": "#303030",
-                        "inverse-on-surface": "#31302f",
-                        "outline-variant": "#48473f",
-                        "on-primary": "#323124",
-                        "surface-container": "#201f1e",
-                        "on-secondary": "#313030",
-                        "surface-container-high": "#2b2a28",
-                        "secondary-fixed-dim": "#c8c6c5",
-                        "background": "#000000",
-                        "on-secondary-fixed-variant": "#474646",
-                        "primary": "#fbf7e4",
-                        "primary-container": "#DEDBC8",
-                        "surface-variant": "#363533",
-                        "tertiary": "#f9f6f6",
-                        "surface-container-lowest": "#0f0e0d",
-                        "secondary": "#c8c6c5",
-                        "on-secondary-fixed": "#1c1b1b",
-                        "tertiary-fixed": "#e5e2e1",
-                        "surface-tint": "#cac7b5",
-                        "on-primary-fixed": "#1c1c10",
-                        "secondary-container": "#4a4949",
-                        "outline": "#939187",
-                        "on-tertiary-fixed": "#1b1c1c",
-                        "on-background": "#e6e2df",
-                        "on-error": "#690005",
-                        "on-error-container": "#ffdad6",
-                        "primary-fixed-dim": "#cac7b5",
-                        "on-surface-variant": "#c9c6bc",
-                        "surface-container-highest": "#363533",
-                        "error-container": "#93000a",
-                        "on-secondary-container": "#bab8b7",
-                        "error": "#ffb4ab",
-                        "surface-dim": "#141312",
-                        "on-primary-container": "#616051",
-                        "tertiary-fixed-dim": "#c8c6c5",
-                        "on-tertiary-fixed-variant": "#474746",
-                        "on-surface": "#DEDBC8",
-                        "surface-container-low": "#1c1b1a",
-                        "secondary-fixed": "#e5e2e1",
-                        "primary-fixed": "#e6e3d0",
-                        "on-tertiary-container": "#605f5f",
-                        "surface-bright": "#3a3937",
-                        "inverse-surface": "#e6e2df",
-                        "inverse-primary": "#605f50",
-                        "on-primary-fixed-variant": "#484739"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.125rem",
-                        "lg": "0.25rem",
-                        "xl": "0.5rem",
-                        "full": "0.75rem"
-                    },
-                    "fontFamily": {
-                        "headline-lg": ["Instrument Serif", "serif"],
-                        "label-sm": ["Almarai", "sans-serif"],
-                        "display-xl": ["Instrument Serif", "serif"],
-                        "body-lg": ["Almarai", "sans-serif"],
-                        "headline-md": ["Almarai", "sans-serif"],
-                        "body-md": ["Almarai", "sans-serif"]
-                    },
-                    "fontSize": {
-                        "headline-lg": ["48px", {"lineHeight": "1.2", "fontWeight": "400"}],
-                        "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "700"}],
-                        "display-xl": ["80px", {"lineHeight": "1.1", "fontWeight": "400"}],
-                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
-                        "headline-md": ["32px", {"lineHeight": "1.3", "fontWeight": "700"}],
-                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
-                    }
-                }
-            }
-        }
-    </script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>鋒 Flux Creators | The Way of the Lens</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans+JP:wght@100;300;400&display=swap" rel="stylesheet"/>
 <style>
-        .noise-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 50;
-            opacity: 0.04;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-        }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .cinematic-reveal {
-            transition: transform 1.2s cubic-bezier(0.2, 0, 0, 1), opacity 1.2s cubic-bezier(0.2, 0, 0, 1);
-        }
+  :root {
+    --ink: #0a0806;
+    --ash: #111009;
+    --gold: #c8a96e;
+    --gold-dim: #7a6340;
+    --ivory: #e8dfc8;
+    --ivory-dim: #9c9485;
+    --blood: #7a1a1a;
+    --blood-bright: #a02020;
+    --mist: rgba(200,169,110,0.06);
+    --border: rgba(200,169,110,0.15);
+    --border-dim: rgba(200,169,110,0.07);
+  }
 
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            vertical-align: middle;
-        }
+  html { scroll-behavior: smooth; }
 
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #000000;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #212121;
-        }
-    </style>
+  body {
+    background: var(--ink);
+    color: var(--ivory);
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* NOISE */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.035; pointer-events: none; z-index: 9999;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 2px; }
+  ::-webkit-scrollbar-track { background: var(--ink); }
+  ::-webkit-scrollbar-thumb { background: var(--gold-dim); }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 28px 60px;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.8s, background 0.8s, padding 0.5s;
+  }
+  nav.scrolled {
+    background: rgba(10,8,6,0.92);
+    backdrop-filter: blur(12px);
+    border-color: var(--border-dim);
+    padding: 18px 60px;
+  }
+  .nav-mark {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 11px; letter-spacing: 0.25em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+  .nav-links { display: flex; align-items: center; gap: 48px; }
+  .nav-links a {
+    font-family: 'Cinzel', serif;
+    font-size: 9px; letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ivory-dim);
+    text-decoration: none;
+    transition: color 0.4s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; left: 0; bottom: -3px;
+    width: 0; height: 1px; background: var(--gold);
+    transition: width 0.4s cubic-bezier(0.2,0,0,1);
+  }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-links a:hover::after { width: 100%; }
+
+  /* ── HERO ── */
+  #hero {
+    position: relative; height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 30% 50%, rgba(122,26,26,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 80% 60%, rgba(200,169,110,0.04) 0%, transparent 60%),
+      linear-gradient(180deg, rgba(10,8,6,0) 40%, rgba(10,8,6,0.95) 100%);
+    z-index: 1;
+  }
+
+  /* Ink wash circles */
+  .ink-wash {
+    position: absolute; border-radius: 50%;
+    background: radial-gradient(circle, rgba(122,26,26,0.18) 0%, transparent 70%);
+    filter: blur(60px);
+    pointer-events: none;
+  }
+  .ink-wash-1 { width: 800px; height: 800px; top: -200px; left: -100px; z-index: 0; }
+  .ink-wash-2 { width: 400px; height: 400px; top: 20%; right: 15%; opacity: 0.5; z-index: 0; }
+
+  /* Kanji watermark */
+  .hero-kanji {
+    position: absolute; right: 8%; top: 50%; transform: translateY(-50%);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 28vw; font-weight: 100;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(200,169,110,0.05);
+    line-height: 1;
+    user-select: none; pointer-events: none;
+    z-index: 0;
+    letter-spacing: -0.05em;
+  }
+
+  /* Vertical katana line */
+  .katana-line {
+    position: absolute; left: 50%; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(180deg, transparent 0%, var(--gold-dim) 20%, var(--gold) 50%, var(--gold-dim) 80%, transparent 100%);
+    opacity: 0;
+    animation: katanaReveal 2s cubic-bezier(0.2,0,0,1) 0.5s forwards;
+    z-index: 2;
+  }
+  @keyframes katanaReveal {
+    from { opacity: 0; transform: scaleY(0); transform-origin: top; }
+    to   { opacity: 0.3; transform: scaleY(1); transform-origin: top; }
+  }
+
+  .hero-content {
+    position: relative; z-index: 10;
+    padding: 0 60px 80px;
+    max-width: 1400px; margin: 0 auto; width: 100%;
+  }
+  .hero-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 9px; letter-spacing: 0.5em;
+    text-transform: uppercase; color: var(--gold);
+    margin-bottom: 32px;
+    opacity: 0; animation: fadeUp 1s ease 0.8s forwards;
+  }
+  .hero-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(52px, 9vw, 140px);
+    font-weight: 400; line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--ivory);
+    opacity: 0; animation: fadeUp 1.2s cubic-bezier(0.2,0,0,1) 0.6s forwards;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.7em;
+    font-weight: 300;
+  }
+  .hero-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px; font-weight: 300;
+    font-style: italic; color: var(--ivory-dim);
+    margin-top: 24px; max-width: 420px;
+    line-height: 1.7;
+    opacity: 0; animation: fadeUp 1s ease 1.2s forwards;
+  }
+  .hero-cta-row {
+    display: flex; align-items: center; gap: 40px;
+    margin-top: 56px;
+    opacity: 0; animation: fadeUp 1s ease 1.5s forwards;
+  }
+  .btn-primary {
+    font-family: 'Cinzel', serif;
+    font-size: 9px; letter-spacing: 0.35em;
+    text-transform: uppercase; color: var(--ink);
+    background: var(--gold);
+    border: none; padding: 16px 36px;
+    cursor: crosshair;
+    transition: background 0.4s, letter-spacing 0.4s;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-primary:hover { background: var(--ivory); letter-spacing: 0.45em; }
+  .btn-ghost {
+    font-family: 'Cinzel', serif;
+    font-size: 9px; letter-spacing: 0.35em;
+    text-transform: uppercase; color: var(--ivory-dim);
+    background: none; border: 1px solid var(--border);
+    padding: 15px 36px; cursor: crosshair;
+    transition: color 0.4s, border-color 0.4s;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-ghost:hover { color: var(--gold); border-color: var(--gold-dim); }
+
+  /* Scroll indicator */
+  .scroll-hint {
+    position: absolute; bottom: 40px; right: 60px; z-index: 10;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    opacity: 0; animation: fadeIn 1s ease 2s forwards;
+  }
+  .scroll-hint span {
+    font-family: 'Cinzel', serif;
+    font-size: 8px; letter-spacing: 0.4em;
+    text-transform: uppercase; color: var(--gold-dim);
+    writing-mode: vertical-rl;
+  }
+  .scroll-line {
+    width: 1px; height: 60px;
+    background: linear-gradient(180deg, var(--gold-dim), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse {
+    0%,100% { opacity: 0.3; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(1.1); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+
+  /* ── DIVIDER ── */
+  .blade-divider {
+    display: flex; align-items: center; gap: 24px;
+    padding: 0 60px; margin: 0 auto;
+    max-width: 1400px;
+  }
+  .blade-divider::before, .blade-divider::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+  .blade-divider span {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 20px; color: var(--gold); opacity: 0.5;
+    font-weight: 100;
+  }
+
+  /* ── PHILOSOPHY (ABOUT) ── */
+  #philosophy {
+    padding: 120px 0;
+    background: var(--ash);
+    border-top: 1px solid var(--border-dim);
+    border-bottom: 1px solid var(--border-dim);
+  }
+  .philosophy-inner {
+    max-width: 1400px; margin: 0 auto;
+    padding: 0 60px;
+    display: grid; grid-template-columns: 1fr 1.4fr;
+    gap: 100px; align-items: start;
+  }
+  .philosophy-left { padding-top: 8px; }
+  .section-tag {
+    font-family: 'Cinzel', serif;
+    font-size: 8px; letter-spacing: 0.5em;
+    text-transform: uppercase; color: var(--gold);
+    margin-bottom: 32px; display: block;
+  }
+  .section-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 120px; font-weight: 300;
+    color: rgba(200,169,110,0.06);
+    line-height: 1; margin-bottom: -40px;
+    display: block;
+  }
+  .section-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(28px, 3.5vw, 52px);
+    font-weight: 400; line-height: 1.15;
+    color: var(--ivory);
+    margin-bottom: 24px;
+  }
+  .section-title em {
+    display: block; font-style: italic;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.85em; color: var(--gold); font-weight: 300;
+  }
+  .philosophy-body {
+    font-size: 18px; line-height: 1.9;
+    color: var(--ivory-dim);
+    font-weight: 300;
+    border-left: 1px solid var(--border);
+    padding-left: 36px;
+  }
+  .philosophy-body p + p { margin-top: 24px; }
+  .philosophy-body strong {
+    color: var(--ivory); font-weight: 400;
+  }
+
+  /* vertical stat strip */
+  .stat-strip {
+    display: flex; gap: 0;
+    margin-top: 60px;
+    border: 1px solid var(--border-dim);
+  }
+  .stat-item {
+    flex: 1; padding: 28px 24px;
+    border-right: 1px solid var(--border-dim);
+    text-align: center;
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 36px; color: var(--gold);
+    display: block; margin-bottom: 6px;
+  }
+  .stat-label {
+    font-family: 'Cinzel', serif;
+    font-size: 7px; letter-spacing: 0.35em;
+    text-transform: uppercase; color: var(--ivory-dim);
+  }
+
+  /* ── DISCIPLINES ── */
+  #disciplines {
+    padding: 160px 0;
+    background: var(--ink);
+  }
+  .disciplines-inner {
+    max-width: 1400px; margin: 0 auto;
+    padding: 0 60px;
+  }
+  .disciplines-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 80px;
+    border-bottom: 1px solid var(--border-dim);
+    padding-bottom: 40px;
+  }
+  .disc-list {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+  .disc-card {
+    background: var(--ash);
+    border: 1px solid var(--border-dim);
+    padding: 48px 40px;
+    position: relative; overflow: hidden;
+    cursor: crosshair;
+    transition: border-color 0.5s, background 0.5s;
+  }
+  .disc-card:hover {
+    border-color: var(--gold-dim);
+    background: rgba(200,169,110,0.03);
+  }
+  .disc-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--blood-bright), transparent);
+    opacity: 0; transition: opacity 0.5s;
+  }
+  .disc-card:hover::before { opacity: 1; }
+  .disc-num {
+    font-family: 'Cinzel', serif;
+    font-size: 8px; letter-spacing: 0.4em;
+    color: var(--gold-dim); margin-bottom: 32px;
+    display: block;
+  }
+  .disc-kanji {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 42px; font-weight: 100;
+    color: rgba(200,169,110,0.12);
+    position: absolute; right: 24px; top: 24px;
+    transition: color 0.5s;
+  }
+  .disc-card:hover .disc-kanji { color: rgba(200,169,110,0.2); }
+  .disc-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 20px; color: var(--ivory);
+    margin-bottom: 16px; font-weight: 400;
+  }
+  .disc-desc {
+    font-size: 15px; line-height: 1.75;
+    color: var(--ivory-dim); font-weight: 300;
+  }
+  .disc-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 40px; padding-top: 20px;
+    border-top: 1px solid var(--border-dim);
+  }
+  .disc-tag {
+    font-family: 'Cinzel', serif;
+    font-size: 7px; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--gold-dim);
+  }
+  .disc-arrow {
+    width: 24px; height: 1px;
+    background: var(--gold-dim);
+    position: relative; transition: width 0.4s;
+  }
+  .disc-arrow::after {
+    content: ''; position: absolute;
+    right: 0; top: -3px;
+    border-right: 1px solid var(--gold-dim);
+    border-top: 1px solid var(--gold-dim);
+    width: 6px; height: 6px;
+    transform: rotate(45deg);
+  }
+  .disc-card:hover .disc-arrow { width: 40px; }
+
+  /* ── FEATURED ── */
+  #featured {
+    padding: 160px 0;
+    background: #0d0b09;
+    border-top: 1px solid var(--border-dim);
+  }
+  .featured-inner { max-width: 1400px; margin: 0 auto; padding: 0 60px; }
+  .featured-grid {
+    display: grid; grid-template-columns: 1.6fr 1fr;
+    gap: 2px; margin-top: 80px;
+  }
+  .featured-main {
+    background: var(--ash);
+    border: 1px solid var(--border-dim);
+    position: relative; overflow: hidden;
+    aspect-ratio: 4/3;
+    cursor: crosshair;
+  }
+  .featured-main-inner {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(135deg, rgba(122,26,26,0.2) 0%, rgba(10,8,6,0.6) 100%),
+      repeating-linear-gradient(
+        0deg,
+        transparent, transparent 60px,
+        rgba(200,169,110,0.02) 60px, rgba(200,169,110,0.02) 61px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent, transparent 60px,
+        rgba(200,169,110,0.02) 60px, rgba(200,169,110,0.02) 61px
+      );
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 48px;
+    transition: background 0.7s;
+  }
+  .featured-main:hover .featured-main-inner {
+    background:
+      linear-gradient(135deg, rgba(122,26,26,0.35) 0%, rgba(10,8,6,0.5) 100%),
+      repeating-linear-gradient(
+        0deg,
+        transparent, transparent 60px,
+        rgba(200,169,110,0.03) 60px, rgba(200,169,110,0.03) 61px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent, transparent 60px,
+        rgba(200,169,110,0.03) 60px, rgba(200,169,110,0.03) 61px
+      );
+  }
+  .featured-tag {
+    font-family: 'Cinzel', serif;
+    font-size: 7px; letter-spacing: 0.4em;
+    text-transform: uppercase; color: var(--gold);
+    margin-bottom: 16px; display: block;
+  }
+  .featured-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 32px; color: var(--ivory);
+    line-height: 1.2; font-weight: 400;
+  }
+  .featured-meta {
+    font-size: 13px; color: var(--ivory-dim);
+    margin-top: 12px; font-style: italic;
+  }
+
+  /* big kanji overlay on featured */
+  .featured-kanji-bg {
+    position: absolute; right: -20px; top: -20px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 200px; font-weight: 100;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(200,169,110,0.06);
+    pointer-events: none; line-height: 1;
+    user-select: none;
+  }
+
+  .featured-side {
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .featured-mini {
+    flex: 1;
+    background: var(--ash);
+    border: 1px solid var(--border-dim);
+    padding: 36px 32px;
+    cursor: crosshair; position: relative; overflow: hidden;
+    transition: border-color 0.4s, background 0.4s;
+  }
+  .featured-mini:hover {
+    border-color: var(--blood-bright);
+    background: rgba(122,26,26,0.05);
+  }
+  .featured-mini-num {
+    font-family: 'Cinzel', serif;
+    font-size: 7px; letter-spacing: 0.4em;
+    color: var(--gold-dim); margin-bottom: 16px; display: block;
+  }
+  .featured-mini-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px; font-weight: 300;
+    color: var(--ivory); font-style: italic;
+    line-height: 1.3;
+  }
+
+  /* ── MANIFESTO STRIP ── */
+  #manifesto {
+    border-top: 1px solid var(--border-dim);
+    border-bottom: 1px solid var(--border-dim);
+    padding: 80px 60px;
+    background: var(--blood);
+    overflow: hidden; position: relative;
+  }
+  #manifesto::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 1px,
+      transparent 1px, transparent 60px
+    );
+    pointer-events: none;
+  }
+  .manifesto-text {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(32px, 5vw, 72px);
+    font-weight: 400; color: var(--ivory);
+    text-align: center; line-height: 1.2;
+    position: relative; z-index: 1;
+  }
+  .manifesto-text em {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic; color: rgba(232,223,200,0.6);
+    font-size: 0.8em;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink);
+    padding: 60px;
+    border-top: 1px solid var(--border-dim);
+  }
+  .footer-inner {
+    max-width: 1400px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .footer-mark {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 14px; color: var(--gold);
+    letter-spacing: 0.1em;
+  }
+  .footer-links {
+    display: flex; gap: 40px;
+  }
+  .footer-links a {
+    font-family: 'Cinzel', serif;
+    font-size: 8px; letter-spacing: 0.4em;
+    text-transform: uppercase; color: var(--ivory-dim);
+    text-decoration: none; transition: color 0.3s;
+  }
+  .footer-links a:hover { color: var(--gold); }
+  .footer-copy {
+    font-family: 'Cinzel', serif;
+    font-size: 7px; letter-spacing: 0.35em;
+    text-transform: uppercase; color: rgba(200,169,110,0.2);
+  }
+
+  /* ── REVEAL ANIMATION ── */
+  .reveal {
+    opacity: 0; transform: translateY(40px);
+    transition: opacity 0.9s cubic-bezier(0.2,0,0,1), transform 0.9s cubic-bezier(0.2,0,0,1);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.35s; }
+  .reveal-delay-4 { transition-delay: 0.5s; }
+  .reveal-delay-5 { transition-delay: 0.65s; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 20px 24px; }
+    .nav-links { gap: 28px; }
+    .hero-content { padding: 0 24px 60px; }
+    .blade-divider { padding: 0 24px; }
+    .philosophy-inner { grid-template-columns: 1fr; gap: 48px; padding: 0 24px; }
+    .disciplines-inner, .featured-inner { padding: 0 24px; }
+    .disc-list { grid-template-columns: 1fr; }
+    .featured-grid { grid-template-columns: 1fr; }
+    .footer-inner { flex-direction: column; gap: 32px; text-align: center; }
+    .footer-links { flex-wrap: wrap; justify-content: center; }
+    #manifesto { padding: 60px 24px; }
+    footer { padding: 48px 24px; }
+  }
+</style>
 </head>
-<body class="bg-background text-on-surface font-body-md selection:bg-primary-container selection:text-background overflow-x-hidden">
-<!-- Global Noise Overlay -->
-<div class="noise-overlay"></div>
-<!-- TopNavBar -->
-<nav class="fixed top-6 left-1/2 -translate-x-1/2 rounded-full border border-[#212121] px-6 py-2 w-auto bg-black/80 backdrop-blur-xl flex items-center gap-8 shadow-2xl z-[100] transition-all duration-500 hover:scale-105" style="transition-timing-function: cubic-bezier(0.2, 0, 0, 1);">
-<div class="text-xl font-bold tracking-tighter text-[#DEDBC8]">Flux Creators</div>
-<div class="hidden md:flex items-center gap-8 font-sans uppercase tracking-widest text-xs">
-<a class="text-[#DEDBC8] border-b border-[#DEDBC8] pb-1 transition-colors duration-500" href="#">Our story</a>
-<a class="text-[#DEDBC8]/60 hover:text-[#DEDBC8] transition-colors duration-500" href="#">Collective</a>
-<a class="text-[#DEDBC8]/60 hover:text-[#DEDBC8] transition-colors duration-500" href="#">Workshops</a>
-<a class="text-[#DEDBC8]/60 hover:text-[#DEDBC8] transition-colors duration-500" href="#">Programs</a>
-</div>
-<a class="text-[#DEDBC8] font-sans uppercase tracking-widest text-xs hover:opacity-70 transition-opacity" href="#">Inquiries</a>
+<body>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <div class="nav-mark">鋒 Flux Creators</div>
+  <div class="nav-links">
+    <a href="#philosophy">Philosophy</a>
+    <a href="#disciplines">Disciplines</a>
+    <a href="#featured">Works</a>
+    <a href="#">Contact</a>
+  </div>
 </nav>
-<!-- SECTION 1: HERO -->
-<section class="relative h-screen w-full overflow-hidden p-4 md:p-6 flex flex-col justify-end">
-<!-- Video Background -->
-<video autoplay="" class="absolute top-0 left-0 w-full h-full object-cover z-0" loop="" muted="" playsinline="">
-<source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260405_170732_8a9ccda6-5cff-4628-b164-059c500a2b41.mp4" type="video/mp4"/>
-</video>
-<!-- Gradient Overlays -->
-<div class="absolute inset-0 z-10 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
-<div class="absolute inset-0 z-10 bg-black/40"></div>
-<!-- Content -->
-<div class="relative z-20 max-w-7xl mx-auto w-full mb-12">
-<div class="overflow-hidden">
-<h1 class="font-display-xl text-primary text-[12vw] md:text-[180px] leading-none tracking-tighter flex items-start">
-                    Flux<span class="text-[0.4em] font-headline-lg mt-[0.1em]">*</span>
-</h1>
-</div>
-<div class="mt-8 flex flex-col md:flex-row md:items-end justify-between gap-8">
-<p class="max-w-md font-body-lg text-primary/80 opacity-0 translate-y-8 animate-[fadeInUp_1s_ease-out_0.5s_forwards]">
-                    An experimental laboratory for film-makers and visual artists. We blend classical narrative with disruptive digital techniques.
-                </p>
-<button class="bg-primary-container text-black font-label-sm px-8 py-4 flex items-center gap-4 hover:bg-white transition-all group">
-                    Join the lab
-                    <span class="material-symbols-outlined group-hover:translate-x-2 transition-transform" data-icon="arrow_right_alt">arrow_right_alt</span>
-</button>
-</div>
-</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="ink-wash ink-wash-1"></div>
+  <div class="ink-wash ink-wash-2"></div>
+  <div class="katana-line"></div>
+  <div class="hero-kanji">刃</div>
+  <div class="hero-bg"></div>
+
+  <div class="hero-content">
+    <p class="hero-eyebrow">Flux Creators · The Way of the Lens · 映像の道</p>
+    <h1 class="hero-title">
+      The Blade<br>
+      <em>never forgets</em>
+    </h1>
+    <p class="hero-sub">An experimental studio forged in discipline and shadow — where cinema meets the ancient art of precision.</p>
+    <div class="hero-cta-row">
+      <a href="#philosophy" class="btn-primary">Enter the Dōjō</a>
+      <a href="#featured" class="btn-ghost">View the Scroll</a>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
 </section>
-<!-- SECTION 2: ABOUT -->
-<section class="bg-black py-40 px-6">
-<div class="max-w-5xl mx-auto">
-<div class="bg-[#101010] border border-[#212121] p-12 md:p-24 relative overflow-hidden group">
-<div class="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary via-transparent to-transparent"></div>
-<span class="font-label-sm text-primary/40 block mb-12">Visual arts</span>
-<h2 class="font-display-xl text-primary leading-[1.1] mb-12">
-<span class="block">I am Hitin Banga,</span>
-<span class="block italic font-headline-lg text-primary/90 py-2">a self-taught director.</span>
-<span class="block text-headline-md font-body-md opacity-70">I have skills in Website designing, visual effects, and narrative design.</span>
-</h2>
-<div class="max-w-2xl">
-<p class="font-body-lg text-primary/60 leading-relaxed character-reveal">
-                        Over the last four years, I have worked with Parallax, Zenith, and various independent studios to push the boundaries of cinematic storytelling. My process is rooted in the belief that digital artifacts can possess as much soul as celluloid.
-                    </p>
+
+<!-- DIVIDER -->
+<div class="blade-divider" style="padding-top:0; padding-bottom:0; height:1px; margin:0; max-width:100%;">
+  <div style="flex:1; height:1px; background:linear-gradient(90deg, var(--ink), var(--border-dim), var(--ink));"></div>
 </div>
-</div>
-</div>
+
+<!-- PHILOSOPHY -->
+<section id="philosophy">
+  <div class="philosophy-inner">
+    <div class="philosophy-left">
+      <span class="section-tag reveal">01 — Philosophy</span>
+      <span class="section-number reveal reveal-delay-1">一</span>
+      <h2 class="section-title reveal reveal-delay-2">
+        Master of<br>
+        <em>image and shadow</em>
+      </h2>
+      <div class="stat-strip reveal reveal-delay-3">
+        <div class="stat-item">
+          <span class="stat-num">4</span>
+          <span class="stat-label">Years of Steel</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">37</span>
+          <span class="stat-label">Films Forged</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">12</span>
+          <span class="stat-label">Studios</span>
+        </div>
+      </div>
+    </div>
+    <div class="philosophy-body reveal reveal-delay-2">
+      <p>I am <strong>Hitin Banga</strong> — a self-taught director drawn to the silence between frames. Like the samurai who finds truth in stillness before the strike, I seek the precise moment when story becomes emotion.</p>
+      <p>Four years spent at Parallax, Zenith, and the frontiers of independent cinema have forged a singular belief: that <strong>the most powerful images are those carved from restraint</strong> — not abundance. Every cut is a decision. Every frame, a commitment.</p>
+      <p>My practice spans visual effects, narrative architecture, and the invisible craft of rhythm — the tension a samurai holds before the blade moves. <strong>Digital artifacts can possess the soul of celluloid.</strong> This is the dōjō where that truth is tested.</p>
+    </div>
+  </div>
 </section>
-<!-- SECTION 3: FEATURES -->
-<section class="min-h-screen relative bg-black py-40 px-6">
-<div class="max-w-7xl mx-auto">
-<header class="mb-24 flex flex-col md:flex-row md:items-end gap-6 border-b border-[#212121] pb-12">
-<h2 class="text-headline-lg font-headline-lg text-primary flex-1">Studio-grade workflows...</h2>
-<p class="text-headline-md font-body-md text-[#6B7280] max-w-sm">Built for pure vision...</p>
-</header>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-<!-- Video Card -->
-<div class="aspect-[4/5] bg-[#101010] border border-[#212121] overflow-hidden relative group">
-<video autoplay="" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" loop="" muted="" playsinline="">
-<source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260406_133058_0504132a-0cf3-4450-a370-8ea3b05c95d4.mp4" type="video/mp4"/>
-</video>
-<div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
-<div class="absolute bottom-6 left-6">
-<span class="font-label-sm text-primary">Live Grading</span>
-</div>
-</div>
-<!-- Project Storyboard -->
-<div class="aspect-[4/5] bg-[#101010] border border-[#212121] p-8 flex flex-col">
-<span class="font-label-sm text-primary/40 mb-auto uppercase tracking-tighter">02 — Storyboard</span>
-<h3 class="text-headline-md font-body-md text-primary mb-8">Narrative Flow</h3>
-<ul class="space-y-4">
-<li class="flex items-center gap-3 text-body-md text-primary/70">
-<span class="material-symbols-outlined text-green-500" data-icon="check_circle" data-weight="fill">check_circle</span>
-                            Scene sequencing
-                        </li>
-<li class="flex items-center gap-3 text-body-md text-primary/70">
-<span class="material-symbols-outlined text-green-500" data-icon="check_circle" data-weight="fill">check_circle</span>
-                            Keyframe logging
-                        </li>
-<li class="flex items-center gap-3 text-body-md text-primary/70">
-<span class="material-symbols-outlined text-green-500" data-icon="check_circle" data-weight="fill">check_circle</span>
-                            Dynamic export
-                        </li>
-</ul>
-</div>
-<!-- Smart Critiques -->
-<div class="aspect-[4/5] bg-[#101010] border border-[#212121] p-8 flex flex-col">
-<span class="font-label-sm text-primary/40 mb-auto uppercase tracking-tighter">03 — Intelligence</span>
-<h3 class="text-headline-md font-body-md text-primary mb-8">AI Analysis</h3>
-<ul class="space-y-4">
-<li class="flex items-center gap-3 text-body-md text-primary/70">
-<span class="material-symbols-outlined text-primary/30" data-icon="auto_awesome">auto_awesome</span>
-                            Composition audit
-                        </li>
-<li class="flex items-center gap-3 text-body-md text-primary/70">
-<span class="material-symbols-outlined text-primary/30" data-icon="palette">palette</span>
-                            Gamut protection
-                        </li>
-<li class="flex items-center gap-3 text-body-md text-primary/70">
-<span class="material-symbols-outlined text-primary/30" data-icon="history_edu">history_edu</span>
-                            Script coherence
-                        </li>
-</ul>
-</div>
-<!-- Immersion Capsule -->
-<div class="aspect-[4/5] bg-primary-container p-8 flex flex-col group hover:bg-white transition-colors duration-500">
-<span class="font-label-sm text-black/40 mb-auto uppercase tracking-tighter">04 — Focus</span>
-<h3 class="text-headline-md font-body-md text-black mb-8">Immersion Capsule</h3>
-<div class="flex flex-col gap-2">
-<div class="h-px w-full bg-black/10"></div>
-<div class="py-3 flex justify-between items-center text-black font-label-sm">
-<span>Zero distractions</span>
-<span class="material-symbols-outlined" data-icon="lock">lock</span>
-</div>
-<div class="h-px w-full bg-black/10"></div>
-<div class="py-3 flex justify-between items-center text-black font-label-sm">
-<span>Binaural sync</span>
-<span class="material-symbols-outlined" data-icon="headset">headset</span>
-</div>
-<div class="h-px w-full bg-black/10"></div>
-</div>
-</div>
-</div>
-</div>
+
+<!-- DISCIPLINES -->
+<section id="disciplines">
+  <div class="disciplines-inner">
+    <div class="disciplines-header">
+      <div>
+        <span class="section-tag reveal">02 — Disciplines</span>
+        <h2 class="section-title reveal reveal-delay-1" style="margin-bottom:0;">The Five<br><em>schools of sight</em></h2>
+      </div>
+      <p style="font-size:14px; color:var(--ivory-dim); max-width:280px; line-height:1.7; font-style:italic;" class="reveal reveal-delay-2">
+        Each discipline a kata. Practiced until it disappears into instinct.
+      </p>
+    </div>
+
+    <div class="disc-list">
+      <!-- 1 -->
+      <div class="disc-card reveal">
+        <span class="disc-kanji">映</span>
+        <span class="disc-num">01 — Shōen</span>
+        <div class="disc-title">Cinematography</div>
+        <p class="disc-desc">The grammar of light and shadow. Every composition a haiku — economical, weighted, irreversible.</p>
+        <div class="disc-footer">
+          <span class="disc-tag">Visual Language</span>
+          <div class="disc-arrow"></div>
+        </div>
+      </div>
+      <!-- 2 -->
+      <div class="disc-card reveal reveal-delay-1">
+        <span class="disc-kanji">語</span>
+        <span class="disc-num">02 — Monogatari</span>
+        <div class="disc-title">Narrative Design</div>
+        <p class="disc-desc">Story is the blade. Structure is the hand that guides it. We build worlds with the patience of a swordsmith.</p>
+        <div class="disc-footer">
+          <span class="disc-tag">Story Architecture</span>
+          <div class="disc-arrow"></div>
+        </div>
+      </div>
+      <!-- 3 -->
+      <div class="disc-card reveal reveal-delay-2">
+        <span class="disc-kanji">幻</span>
+        <span class="disc-num">03 — Maboroshi</span>
+        <div class="disc-title">Visual Effects</div>
+        <p class="disc-desc">Illusion as discipline. Digital forces shaped with the same rigor as a brush on washi paper.</p>
+        <div class="disc-footer">
+          <span class="disc-tag">Digital Alchemy</span>
+          <div class="disc-arrow"></div>
+        </div>
+      </div>
+      <!-- 4 -->
+      <div class="disc-card reveal reveal-delay-3">
+        <span class="disc-kanji">彩</span>
+        <span class="disc-num">04 — Irodori</span>
+        <div class="disc-title">Color Grading</div>
+        <p class="disc-desc">The emotional temperature of a scene lives in its palette. We grade with intention, not correction.</p>
+        <div class="disc-footer">
+          <span class="disc-tag">Chromatic Mastery</span>
+          <div class="disc-arrow"></div>
+        </div>
+      </div>
+      <!-- 5 -->
+      <div class="disc-card reveal reveal-delay-4">
+        <span class="disc-kanji">間</span>
+        <span class="disc-num">05 — Ma</span>
+        <div class="disc-title">Web & Interface</div>
+        <p class="disc-desc">Ma — the art of the interval. Negative space as meaning. Digital surfaces designed to breathe.</p>
+        <div class="disc-footer">
+          <span class="disc-tag">Digital Presence</span>
+          <div class="disc-arrow"></div>
+        </div>
+      </div>
+      <!-- 6 -->
+      <div class="disc-card reveal reveal-delay-5" style="background:rgba(122,26,26,0.08); border-color:rgba(122,26,26,0.3);">
+        <span class="disc-kanji" style="color:rgba(160,32,32,0.25);">道</span>
+        <span class="disc-num" style="color:var(--blood-bright);">06 — Michi</span>
+        <div class="disc-title">The Open Path</div>
+        <p class="disc-desc">Some projects defy category. If you carry a vision that doesn't fit the scroll, we forge a new one together.</p>
+        <div class="disc-footer">
+          <span class="disc-tag" style="color:var(--blood-bright);">Collaboration</span>
+          <div class="disc-arrow" style="background:var(--blood-bright);"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
-<!-- Footer -->
-<footer class="w-full py-12 px-8 border-t border-[#212121] bg-black">
-<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 transition-all duration-700">
-<div class="text-lg font-bold text-[#DEDBC8]">Flux Creators</div>
-<div class="flex items-center gap-8 font-sans text-[10px] tracking-widest uppercase">
-<a class="text-[#DEDBC8]/40 hover:text-[#DEDBC8] transition-opacity" href="#">Privacy</a>
-<a class="text-[#DEDBC8]/40 hover:text-[#DEDBC8] transition-opacity" href="#">Terms</a>
-<a class="text-[#DEDBC8]/40 hover:text-[#DEDBC8] transition-opacity" href="#">Instagram</a>
-</div>
-<p class="font-sans text-[10px] tracking-widest uppercase text-[#DEDBC8]/40">
-                © 2024 Flux Creators. All rights reserved.
-            </p>
-</div>
+
+<!-- FEATURED WORKS -->
+<section id="featured">
+  <div class="featured-inner">
+    <div class="disciplines-header reveal">
+      <div>
+        <span class="section-tag">03 — Selected Works</span>
+        <h2 class="section-title" style="margin-bottom:0;">From the<br><em>archive of shadows</em></h2>
+      </div>
+      <a href="#" class="btn-ghost" style="align-self:flex-end;">Full Reel</a>
+    </div>
+
+    <div class="featured-grid">
+      <div class="featured-main reveal">
+        <div class="featured-kanji-bg">影</div>
+        <div class="featured-main-inner">
+          <span class="featured-tag">Featured · Short Film · 2024</span>
+          <div class="featured-title">Kage no Shita<br><em style="font-family:'Cormorant Garamond',serif; font-size:0.75em; font-weight:300; color:var(--ivory-dim);">Beneath the Shadow</em></div>
+          <p class="featured-meta">Parallax Studios · 18 min · Winner, Independent Visions</p>
+        </div>
+      </div>
+      <div class="featured-side">
+        <div class="featured-mini reveal reveal-delay-1">
+          <span class="featured-mini-num">02 · VFX Short · 2023</span>
+          <div class="featured-mini-title">The Last<br>Signal Fire</div>
+          <p style="font-size:12px; color:var(--ivory-dim); margin-top:12px; font-style:italic;">Zenith Labs · Digital series pilot</p>
+        </div>
+        <div class="featured-mini reveal reveal-delay-2">
+          <span class="featured-mini-num">03 · Brand Film · 2023</span>
+          <div class="featured-mini-title">Mizu<br>Collective</div>
+          <p style="font-size:12px; color:var(--ivory-dim); margin-top:12px; font-style:italic;">Independent · Corporate identity film</p>
+        </div>
+        <div class="featured-mini reveal reveal-delay-3">
+          <span class="featured-mini-num">04 · Web Design · 2024</span>
+          <div class="featured-mini-title">Ronin<br>Creative Agency</div>
+          <p style="font-size:12px; color:var(--ivory-dim); margin-top:12px; font-style:italic;">UI/UX · Narrative interface design</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MANIFESTO -->
+<section id="manifesto">
+  <div class="manifesto-text reveal">
+    The sword is only as true<br>
+    <em>as the hand that holds it.</em>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-mark">鋒 Flux Creators</div>
+    <div class="footer-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Instagram</a>
+      <a href="#">Inquiries</a>
+    </div>
+    <p class="footer-copy">© 2024 Flux Creators · All Rights Reserved</p>
+  </div>
 </footer>
-<style>
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(32px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-    </style>
-</body></html>
+
+<script>
+  // Nav scroll
+  const nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // Reveal on scroll
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
