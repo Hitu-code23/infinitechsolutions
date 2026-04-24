@@ -1,217 +1,80 @@
-<!DOCTYPE html>
+Create a single-page hero section with a fullscreen looping background video, glassmorphic navigation, and cinematic typography. Use React + Vite + Tailwind CSS + TypeScript with shadcn/ui.
 
-<html class="light" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Aethera® | Eternal Minimalism</title>
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            "colors": {
-                    "surface-variant": "#e2e2e2",
-                    "surface-bright": "#f9f9f9",
-                    "on-surface": "#1b1b1b",
-                    "inverse-surface": "#303030",
-                    "inverse-primary": "#c6c6c6",
-                    "secondary": "#5e5e5e",
-                    "on-background": "#1b1b1b",
-                    "primary-container": "#1b1b1b",
-                    "surface-tint": "#5e5e5e",
-                    "tertiary-fixed-dim": "#c6c6c6",
-                    "on-error-container": "#93000a",
-                    "surface-container-high": "#e8e8e8",
-                    "on-tertiary-fixed": "#1b1b1b",
-                    "on-primary": "#ffffff",
-                    "inverse-on-surface": "#f1f1f1",
-                    "on-surface-variant": "#4c4546",
-                    "secondary-fixed-dim": "#c7c6c6",
-                    "surface": "#f9f9f9",
-                    "surface-container-lowest": "#ffffff",
-                    "surface-container": "#eeeeee",
-                    "surface-container-low": "#f3f3f3",
-                    "on-secondary": "#ffffff",
-                    "outline": "#7e7576",
-                    "surface-dim": "#dadada",
-                    "on-error": "#ffffff",
-                    "on-secondary-fixed": "#1b1c1c",
-                    "on-tertiary": "#ffffff",
-                    "on-primary-fixed-variant": "#474747",
-                    "on-secondary-container": "#626263",
-                    "tertiary": "#000000",
-                    "primary-fixed-dim": "#c6c6c6",
-                    "tertiary-fixed": "#e2e2e2",
-                    "error-container": "#ffdad6",
-                    "on-tertiary-container": "#848484",
-                    "on-tertiary-fixed-variant": "#474747",
-                    "secondary-container": "#e1dfdf",
-                    "primary-fixed": "#e2e2e2",
-                    "primary": "#000000",
-                    "tertiary-container": "#1b1b1b",
-                    "on-primary-container": "#848484",
-                    "on-primary-fixed": "#1b1b1b",
-                    "secondary-fixed": "#e4e2e2",
-                    "error": "#ba1a1a",
-                    "surface-container-highest": "#e2e2e2",
-                    "on-secondary-fixed-variant": "#464747",
-                    "background": "#f9f9f9",
-                    "outline-variant": "#cfc4c5"
-            },
-            "borderRadius": {
-                    "DEFAULT": "0.25rem",
-                    "lg": "0.5rem",
-                    "xl": "0.75rem",
-                    "full": "9999px"
-            },
-            "spacing": {
-                    "margin-edge": "64px",
-                    "section-gap": "160px",
-                    "unit": "8px",
-                    "gutter": "32px",
-                    "container-max": "1440px"
-            },
-            "fontFamily": {
-                    "nav-item": ["Inter"],
-                    "caption": ["Inter"],
-                    "display-xl": ["Instrument Serif"],
-                    "h1": ["Instrument Serif"],
-                    "h2": ["Instrument Serif"],
-                    "body-lg": ["Inter"],
-                    "body-md": ["Inter"]
-            },
-            "fontSize": {
-                    "nav-item": ["14px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500"}],
-                    "caption": ["12px", {"lineHeight": "1.4", "fontWeight": "400"}],
-                    "display-xl": ["80px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "400"}],
-                    "h1": ["48px", {"lineHeight": "1.2", "fontWeight": "400"}],
-                    "h2": ["32px", {"lineHeight": "1.3", "fontWeight": "400"}],
-                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
-                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
-            },
-            "keyframes": {
-              "fade-rise": {
-                "0%": { opacity: "0", transform: "translateY(20px)" },
-                "100%": { opacity: "1", transform: "translateY(0)" }
-              }
-            },
-            "animation": {
-              "fade-rise": "fade-rise 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards",
-              "fade-rise-delay": "fade-rise 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards",
-              "fade-rise-delay-2": "fade-rise 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards"
-            }
-          },
-        },
-      }
-    </script>
-<style>
-        body { background-color: #ffffff; }
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .glass-nav { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
-        .hero-video { opacity: 0; transition: opacity 0.5s ease-in-out; }
-    </style>
-</head>
-<body class="min-h-screen overflow-hidden font-body-md text-on-background">
-<!-- TopNavBar -->
-<nav class="fixed top-0 left-0 w-full z-50 bg-white/80 glass-nav border-b border-black/5">
-<div class="flex justify-between items-center px-16 py-8 w-full max-w-[1440px] mx-auto">
-<div class="text-3xl font-serif text-black tracking-tighter">HB VISUALS</div>
-<div class="hidden md:flex items-center space-x-10">
-<a class="font-nav-item text-nav-item text-black border-b border-black pb-1 transition-all duration-300" href="#">Home</a>
-<a class="font-nav-item text-nav-item text-[#6F6F6F] hover:text-black transition-all duration-300" href="#">About Us</a>
-<a class="font-nav-item text-nav-item text-[#6F6F6F] hover:text-black transition-all duration-300" href="#">Reach Us</a>
-</div>
-<button class="bg-black text-white font-nav-item text-nav-item px-6 py-2.5 rounded-full transition-transform duration-300 hover:scale-105">
-                Begin Journey
-            </button>
-</div>
-</nav>
-<!-- Main Content Canvas -->
-<main class="relative min-h-screen pt-32 flex flex-col items-center">
-<!-- Hero Content -->
-<section class="relative z-10 w-full max-w-[1440px] px-16 flex flex-col items-center text-center pt-[calc(8rem-75px)] pb-40">
-<h1 class="font-display-xl text-[80px] leading-[0.95] tracking-[-2.46px] text-black animate-fade-rise opacity-0">
-                Beyond <span class="italic text-[#6F6F6F]">silence,</span> we build <br/> <span class="italic text-[#6F6F6F]">the eternal.</span>
-</h1>
-<p class="mt-8 max-w-2xl font-body-lg text-body-lg text-[#6F6F6F] animate-fade-rise-delay opacity-0">
-                Building platforms for brilliant minds, fearless makers, and thoughtful souls. Through the noise, we craft digital havens for deep work and pure flows.
-            </p>
-<button class="mt-12 bg-black text-white px-14 py-5 rounded-full font-medium transition-transform duration-300 hover:scale-105 animate-fade-rise-delay-2 opacity-0">
-                Begin Journey
-            </button>
-</section>
-<!-- Video Background Container -->
-<div class="fixed top-[300px] inset-x-0 bottom-0 z-0 overflow-hidden">
-<video autoplay="" class="hero-video w-full h-full object-cover" data-alt="Cinematic slow-motion shot of ethereal light particles and soft architectural shadows in a minimalist white studio space" id="hero-vid" muted="" playsinline="">
-<source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_083109_283f3553-e28f-428b-a723-d639c617eb2b.mp4" type="video/mp4"/>
-</video>
-<!-- Overlay Gradient -->
-<div class="absolute inset-0 bg-gradient-to-b from-[#FFFFFF] via-transparent to-[#FFFFFF]"></div>
-</div>
-</main>
-<!-- Footer -->
-<footer class="fixed bottom-0 left-0 w-full z-40 bg-white border-t border-black/5">
-<div class="flex justify-between items-center px-16 py-8 w-full max-w-[1440px] mx-auto">
-<div class="font-nav-item text-[12px] font-medium tracking-widest uppercase text-black">
-                © 2024 Hitin® Studio. Eternal Minimalism.
-            </div>
-<div class="flex items-center space-x-8">
-<a class="font-nav-item text-[12px] font-medium tracking-widest uppercase text-[#6F6F6F] hover:text-black transition-colors" href="#">Privacy</a>
-<a class="font-nav-item text-[12px] font-medium tracking-widest uppercase text-[#6F6F6F] hover:text-black transition-colors" href="#">Terms</a>
-<a class="font-nav-item text-[12px] font-medium tracking-widest uppercase text-[#6F6F6F] hover:text-black transition-colors" href="#">Journal</a>
-</div>
-</div>
-</footer>
-<!-- Video Loop Control Logic Implementation -->
-<script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const video = document.getElementById('hero-vid');
-            if (!video) return;
+Video Background:
 
-            const FADE_DURATION = 0.5; // seconds
-            const WAIT_BEFORE_RESTART = 100; // ms
+Fullscreen <video> element with autoPlay, loop, muted, playsInline
+Source URL: https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4
+Positioned absolute inset-0 w-full h-full object-cover z-0
 
-            const updateVideoOpacity = () => {
-                if (!video.duration) {
-                    requestAnimationFrame(updateVideoOpacity);
-                    return;
-                }
+Fonts:
 
-                const currentTime = video.currentTime;
-                const duration = video.duration;
+Import from Google Fonts: Instrumental Serif (display) and Inter weights 400/500 (body)
+CSS variables: --font-display: 'Instrument Serif', serif and --font-body: 'Inter', sans-serif
+Body uses var(--font-body), headings use inline fontFamily: "'Instrument Serif', serif"
 
-                // Fade in logic
-                if (currentTime < FADE_DURATION) {
-                    video.style.opacity = currentTime / FADE_DURATION;
-                } 
-                // Fade out logic
-                else if (currentTime > (duration - FADE_DURATION)) {
-                    video.style.opacity = (duration - currentTime) / FADE_DURATION;
-                } 
-                // Stable middle
-                else {
-                    video.style.opacity = 1;
-                }
+Color Theme (dark, HSL values for CSS variables):
 
-                requestAnimationFrame(updateVideoOpacity);
-            };
+--background: 201 100% 13% (deep navy blue)
+--foreground: 0 0% 100% (white)
+--muted-foreground: 240 4% 66% (muted gray)
+--primary: 0 0% 100%, --primary-foreground: 0 0% 4%
+--secondary: 0 0% 10%, --muted: 0 0% 10%, --accent: 0 0% 10%
+--border: 0 0% 18%, --input: 0 0% 18%
 
-            video.addEventListener('ended', () => {
-                video.style.opacity = 0;
-                setTimeout(() => {
-                    video.currentTime = 0;
-                    video.play();
-                }, WAIT_BEFORE_RESTART);
-            });
+Navigation Bar:
 
-            // Start the monitoring loop
-            requestAnimationFrame(updateVideoOpacity);
-        });
-    </script>
-</body></html>
+relative z-10, flex row, justify-between, px-8 py-6, max-w-7xl mx-auto
+Logo: "Velorah®" (® as <sup className="text-xs">), text-3xl tracking-tight, Instrument Serif font, text-foreground
+Nav links (hidden on mobile, md:flex): Home (active, text-foreground), Studio, About, Journal, Reach Us — all text-sm text-muted-foreground with hover:text-foreground transition-colors
+CTA button: "Begin Journey", liquid-glass rounded-full px-6 py-2.5 text-sm text-foreground, hover:scale-[1.03]
+
+Hero Section:
+
+relative z-10, flex column, centered, text-center, px-6 pt-32 pb-40 py-[90px]
+H1: "Where dreams rise through the silence." — text-5xl sm:text-7xl md:text-8xl, leading-[0.95], tracking-[-2.46px], max-w-7xl, font-normal, Instrument Serif. The words "dreams" and "through the silence." wrapped in <em className="not-italic text-muted-foreground"> for color contrast
+Subtext: text-muted-foreground text-base sm:text-lg max-w-2xl mt-8 leading-relaxed — "We're designing tools for deep thinkers, bold creators, and quiet rebels. Amid the chaos, we build digital spaces for sharp focus and inspired work."
+CTA button: "Begin Journey", liquid-glass rounded-full px-14 py-5 text-base text-foreground mt-12, hover:scale-[1.03] cursor-pointer
+
+Liquid Glass Effect (CSS class .liquid-glass):
+
+.liquid-glass {
+  background: rgba(255, 255, 255, 0.01);
+  background-blend-mode: luminosity;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: none;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+.liquid-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.4px;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.15) 20%,
+    rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%,
+    rgba(255,255,255,0.15) 80%, rgba(255,255,255,0.45) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+Animations (CSS keyframes + classes):
+
+@keyframes fade-rise {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-rise { animation: fade-rise 0.8s ease-out both; }
+.animate-fade-rise-delay { animation: fade-rise 0.8s ease-out 0.2s both; }
+.animate-fade-rise-delay-2 { animation: fade-rise 0.8s ease-out 0.4s both; }
+
+H1 gets animate-fade-rise
+Subtext gets animate-fade-rise-delay
+Hero CTA button gets animate-fade-rise-delay-2
+
+Layout: No decorative blobs, radial gradients, or overlays. Minimalist, cinematic, vertically centered hero. The video provides all visual depth.
