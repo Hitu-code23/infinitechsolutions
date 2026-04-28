@@ -1,849 +1,501 @@
+
+Hitin <hitin.banga23@gmail.com>
+9:48 PM (9 minutes ago)
+to me
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>鋒 Flux Creators | The Way of the Lens</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans+JP:wght@100;300;400&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fractal Planets — Infinite Zoom</title>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --ink: #0a0806;
-    --ash: #111009;
-    --gold: #c8a96e;
-    --gold-dim: #7a6340;
-    --ivory: #e8dfc8;
-    --ivory-dim: #9c9485;
-    --blood: #7a1a1a;
-    --blood-bright: #a02020;
-    --mist: rgba(200,169,110,0.06);
-    --border: rgba(200,169,110,0.15);
-    --border-dim: rgba(200,169,110,0.07);
-  }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--ink);
-    color: var(--ivory);
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 300;
-    overflow-x: hidden;
-    cursor: crosshair;
-  }
-
-  /* NOISE */
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    opacity: 0.035; pointer-events: none; z-index: 9999;
-  }
-
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 2px; }
-  ::-webkit-scrollbar-track { background: var(--ink); }
-  ::-webkit-scrollbar-thumb { background: var(--gold-dim); }
-
-  /* ── NAV ── */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 500;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 28px 60px;
-    border-bottom: 1px solid transparent;
-    transition: border-color 0.8s, background 0.8s, padding 0.5s;
-  }
-  nav.scrolled {
-    background: rgba(10,8,6,0.92);
-    backdrop-filter: blur(12px);
-    border-color: var(--border-dim);
-    padding: 18px 60px;
-  }
-  .nav-mark {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 11px; letter-spacing: 0.25em;
-    color: var(--gold);
-    text-transform: uppercase;
-  }
-  .nav-links { display: flex; align-items: center; gap: 48px; }
-  .nav-links a {
-    font-family: 'Cinzel', serif;
-    font-size: 9px; letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--ivory-dim);
-    text-decoration: none;
-    transition: color 0.4s;
-    position: relative;
-  }
-  .nav-links a::after {
-    content: ''; position: absolute; left: 0; bottom: -3px;
-    width: 0; height: 1px; background: var(--gold);
-    transition: width 0.4s cubic-bezier(0.2,0,0,1);
-  }
-  .nav-links a:hover { color: var(--gold); }
-  .nav-links a:hover::after { width: 100%; }
-
-  /* ── HERO ── */
-  #hero {
-    position: relative; height: 100vh;
-    display: flex; flex-direction: column;
-    justify-content: flex-end;
-    overflow: hidden;
-  }
-
-  .hero-bg {
-    position: absolute; inset: 0;
-    background:
-      radial-gradient(ellipse 60% 80% at 30% 50%, rgba(122,26,26,0.12) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 60% at 80% 60%, rgba(200,169,110,0.04) 0%, transparent 60%),
-      linear-gradient(180deg, rgba(10,8,6,0) 40%, rgba(10,8,6,0.95) 100%);
-    z-index: 1;
-  }
-
-  /* Ink wash circles */
-  .ink-wash {
-    position: absolute; border-radius: 50%;
-    background: radial-gradient(circle, rgba(122,26,26,0.18) 0%, transparent 70%);
-    filter: blur(60px);
-    pointer-events: none;
-  }
-  .ink-wash-1 { width: 800px; height: 800px; top: -200px; left: -100px; z-index: 0; }
-  .ink-wash-2 { width: 400px; height: 400px; top: 20%; right: 15%; opacity: 0.5; z-index: 0; }
-
-  /* Kanji watermark */
-  .hero-kanji {
-    position: absolute; right: 8%; top: 50%; transform: translateY(-50%);
-    font-family: 'Noto Sans JP', sans-serif;
-    font-size: 28vw; font-weight: 100;
-    color: transparent;
-    -webkit-text-stroke: 1px rgba(200,169,110,0.05);
-    line-height: 1;
-    user-select: none; pointer-events: none;
-    z-index: 0;
-    letter-spacing: -0.05em;
-  }
-
-  /* Vertical katana line */
-  .katana-line {
-    position: absolute; left: 50%; top: 0; bottom: 0;
-    width: 1px;
-    background: linear-gradient(180deg, transparent 0%, var(--gold-dim) 20%, var(--gold) 50%, var(--gold-dim) 80%, transparent 100%);
-    opacity: 0;
-    animation: katanaReveal 2s cubic-bezier(0.2,0,0,1) 0.5s forwards;
-    z-index: 2;
-  }
-  @keyframes katanaReveal {
-    from { opacity: 0; transform: scaleY(0); transform-origin: top; }
-    to   { opacity: 0.3; transform: scaleY(1); transform-origin: top; }
-  }
-
-  .hero-content {
-    position: relative; z-index: 10;
-    padding: 0 60px 80px;
-    max-width: 1400px; margin: 0 auto; width: 100%;
-  }
-  .hero-eyebrow {
-    font-family: 'Cinzel', serif;
-    font-size: 9px; letter-spacing: 0.5em;
-    text-transform: uppercase; color: var(--gold);
-    margin-bottom: 32px;
-    opacity: 0; animation: fadeUp 1s ease 0.8s forwards;
-  }
-  .hero-title {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: clamp(52px, 9vw, 140px);
-    font-weight: 400; line-height: 1;
-    letter-spacing: -0.02em;
-    color: var(--ivory);
-    opacity: 0; animation: fadeUp 1.2s cubic-bezier(0.2,0,0,1) 0.6s forwards;
-  }
-  .hero-title em {
-    font-style: italic;
-    color: var(--gold);
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 0.7em;
-    font-weight: 300;
-  }
-  .hero-sub {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 18px; font-weight: 300;
-    font-style: italic; color: var(--ivory-dim);
-    margin-top: 24px; max-width: 420px;
-    line-height: 1.7;
-    opacity: 0; animation: fadeUp 1s ease 1.2s forwards;
-  }
-  .hero-cta-row {
-    display: flex; align-items: center; gap: 40px;
-    margin-top: 56px;
-    opacity: 0; animation: fadeUp 1s ease 1.5s forwards;
-  }
-  .btn-primary {
-    font-family: 'Cinzel', serif;
-    font-size: 9px; letter-spacing: 0.35em;
-    text-transform: uppercase; color: var(--ink);
-    background: var(--gold);
-    border: none; padding: 16px 36px;
-    cursor: crosshair;
-    transition: background 0.4s, letter-spacing 0.4s;
-    text-decoration: none; display: inline-block;
-  }
-  .btn-primary:hover { background: var(--ivory); letter-spacing: 0.45em; }
-  .btn-ghost {
-    font-family: 'Cinzel', serif;
-    font-size: 9px; letter-spacing: 0.35em;
-    text-transform: uppercase; color: var(--ivory-dim);
-    background: none; border: 1px solid var(--border);
-    padding: 15px 36px; cursor: crosshair;
-    transition: color 0.4s, border-color 0.4s;
-    text-decoration: none; display: inline-block;
-  }
-  .btn-ghost:hover { color: var(--gold); border-color: var(--gold-dim); }
-
-  /* Scroll indicator */
-  .scroll-hint {
-    position: absolute; bottom: 40px; right: 60px; z-index: 10;
-    display: flex; flex-direction: column; align-items: center; gap: 12px;
-    opacity: 0; animation: fadeIn 1s ease 2s forwards;
-  }
-  .scroll-hint span {
-    font-family: 'Cinzel', serif;
-    font-size: 8px; letter-spacing: 0.4em;
-    text-transform: uppercase; color: var(--gold-dim);
-    writing-mode: vertical-rl;
-  }
-  .scroll-line {
-    width: 1px; height: 60px;
-    background: linear-gradient(180deg, var(--gold-dim), transparent);
-    animation: scrollPulse 2s ease-in-out infinite;
-  }
-  @keyframes scrollPulse {
-    0%,100% { opacity: 0.3; transform: scaleY(1); }
-    50% { opacity: 1; transform: scaleY(1.1); }
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; } to { opacity: 1; }
-  }
-
-  /* ── DIVIDER ── */
-  .blade-divider {
-    display: flex; align-items: center; gap: 24px;
-    padding: 0 60px; margin: 0 auto;
-    max-width: 1400px;
-  }
-  .blade-divider::before, .blade-divider::after {
-    content: ''; flex: 1; height: 1px;
-    background: linear-gradient(90deg, transparent, var(--border), transparent);
-  }
-  .blade-divider span {
-    font-family: 'Noto Sans JP', sans-serif;
-    font-size: 20px; color: var(--gold); opacity: 0.5;
-    font-weight: 100;
-  }
-
-  /* ── PHILOSOPHY (ABOUT) ── */
-  #philosophy {
-    padding: 120px 0;
-    background: var(--ash);
-    border-top: 1px solid var(--border-dim);
-    border-bottom: 1px solid var(--border-dim);
-  }
-  .philosophy-inner {
-    max-width: 1400px; margin: 0 auto;
-    padding: 0 60px;
-    display: grid; grid-template-columns: 1fr 1.4fr;
-    gap: 100px; align-items: start;
-  }
-  .philosophy-left { padding-top: 8px; }
-  .section-tag {
-    font-family: 'Cinzel', serif;
-    font-size: 8px; letter-spacing: 0.5em;
-    text-transform: uppercase; color: var(--gold);
-    margin-bottom: 32px; display: block;
-  }
-  .section-number {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 120px; font-weight: 300;
-    color: rgba(200,169,110,0.06);
-    line-height: 1; margin-bottom: -40px;
-    display: block;
-  }
-  .section-title {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: clamp(28px, 3.5vw, 52px);
-    font-weight: 400; line-height: 1.15;
-    color: var(--ivory);
-    margin-bottom: 24px;
-  }
-  .section-title em {
-    display: block; font-style: italic;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 0.85em; color: var(--gold); font-weight: 300;
-  }
-  .philosophy-body {
-    font-size: 18px; line-height: 1.9;
-    color: var(--ivory-dim);
-    font-weight: 300;
-    border-left: 1px solid var(--border);
-    padding-left: 36px;
-  }
-  .philosophy-body p + p { margin-top: 24px; }
-  .philosophy-body strong {
-    color: var(--ivory); font-weight: 400;
-  }
-
-  /* vertical stat strip */
-  .stat-strip {
-    display: flex; gap: 0;
-    margin-top: 60px;
-    border: 1px solid var(--border-dim);
-  }
-  .stat-item {
-    flex: 1; padding: 28px 24px;
-    border-right: 1px solid var(--border-dim);
-    text-align: center;
-  }
-  .stat-item:last-child { border-right: none; }
-  .stat-num {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 36px; color: var(--gold);
-    display: block; margin-bottom: 6px;
-  }
-  .stat-label {
-    font-family: 'Cinzel', serif;
-    font-size: 7px; letter-spacing: 0.35em;
-    text-transform: uppercase; color: var(--ivory-dim);
-  }
-
-  /* ── DISCIPLINES ── */
-  #disciplines {
-    padding: 160px 0;
-    background: var(--ink);
-  }
-  .disciplines-inner {
-    max-width: 1400px; margin: 0 auto;
-    padding: 0 60px;
-  }
-  .disciplines-header {
-    display: flex; justify-content: space-between; align-items: flex-end;
-    margin-bottom: 80px;
-    border-bottom: 1px solid var(--border-dim);
-    padding-bottom: 40px;
-  }
-  .disc-list {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: 2px;
-  }
-  .disc-card {
-    background: var(--ash);
-    border: 1px solid var(--border-dim);
-    padding: 48px 40px;
-    position: relative; overflow: hidden;
-    cursor: crosshair;
-    transition: border-color 0.5s, background 0.5s;
-  }
-  .disc-card:hover {
-    border-color: var(--gold-dim);
-    background: rgba(200,169,110,0.03);
-  }
-  .disc-card::before {
-    content: ''; position: absolute;
-    top: 0; left: 0; right: 0; height: 2px;
-    background: linear-gradient(90deg, transparent, var(--blood-bright), transparent);
-    opacity: 0; transition: opacity 0.5s;
-  }
-  .disc-card:hover::before { opacity: 1; }
-  .disc-num {
-    font-family: 'Cinzel', serif;
-    font-size: 8px; letter-spacing: 0.4em;
-    color: var(--gold-dim); margin-bottom: 32px;
-    display: block;
-  }
-  .disc-kanji {
-    font-family: 'Noto Sans JP', sans-serif;
-    font-size: 42px; font-weight: 100;
-    color: rgba(200,169,110,0.12);
-    position: absolute; right: 24px; top: 24px;
-    transition: color 0.5s;
-  }
-  .disc-card:hover .disc-kanji { color: rgba(200,169,110,0.2); }
-  .disc-title {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 20px; color: var(--ivory);
-    margin-bottom: 16px; font-weight: 400;
-  }
-  .disc-desc {
-    font-size: 15px; line-height: 1.75;
-    color: var(--ivory-dim); font-weight: 300;
-  }
-  .disc-footer {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-top: 40px; padding-top: 20px;
-    border-top: 1px solid var(--border-dim);
-  }
-  .disc-tag {
-    font-family: 'Cinzel', serif;
-    font-size: 7px; letter-spacing: 0.3em;
-    text-transform: uppercase; color: var(--gold-dim);
-  }
-  .disc-arrow {
-    width: 24px; height: 1px;
-    background: var(--gold-dim);
-    position: relative; transition: width 0.4s;
-  }
-  .disc-arrow::after {
-    content: ''; position: absolute;
-    right: 0; top: -3px;
-    border-right: 1px solid var(--gold-dim);
-    border-top: 1px solid var(--gold-dim);
-    width: 6px; height: 6px;
-    transform: rotate(45deg);
-  }
-  .disc-card:hover .disc-arrow { width: 40px; }
-
-  /* ── FEATURED ── */
-  #featured {
-    padding: 160px 0;
-    background: #0d0b09;
-    border-top: 1px solid var(--border-dim);
-  }
-  .featured-inner { max-width: 1400px; margin: 0 auto; padding: 0 60px; }
-  .featured-grid {
-    display: grid; grid-template-columns: 1.6fr 1fr;
-    gap: 2px; margin-top: 80px;
-  }
-  .featured-main {
-    background: var(--ash);
-    border: 1px solid var(--border-dim);
-    position: relative; overflow: hidden;
-    aspect-ratio: 4/3;
-    cursor: crosshair;
-  }
-  .featured-main-inner {
-    position: absolute; inset: 0;
-    background:
-      linear-gradient(135deg, rgba(122,26,26,0.2) 0%, rgba(10,8,6,0.6) 100%),
-      repeating-linear-gradient(
-        0deg,
-        transparent, transparent 60px,
-        rgba(200,169,110,0.02) 60px, rgba(200,169,110,0.02) 61px
-      ),
-      repeating-linear-gradient(
-        90deg,
-        transparent, transparent 60px,
-        rgba(200,169,110,0.02) 60px, rgba(200,169,110,0.02) 61px
-      );
-    display: flex; flex-direction: column; justify-content: flex-end;
-    padding: 48px;
-    transition: background 0.7s;
-  }
-  .featured-main:hover .featured-main-inner {
-    background:
-      linear-gradient(135deg, rgba(122,26,26,0.35) 0%, rgba(10,8,6,0.5) 100%),
-      repeating-linear-gradient(
-        0deg,
-        transparent, transparent 60px,
-        rgba(200,169,110,0.03) 60px, rgba(200,169,110,0.03) 61px
-      ),
-      repeating-linear-gradient(
-        90deg,
-        transparent, transparent 60px,
-        rgba(200,169,110,0.03) 60px, rgba(200,169,110,0.03) 61px
-      );
-  }
-  .featured-tag {
-    font-family: 'Cinzel', serif;
-    font-size: 7px; letter-spacing: 0.4em;
-    text-transform: uppercase; color: var(--gold);
-    margin-bottom: 16px; display: block;
-  }
-  .featured-title {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 32px; color: var(--ivory);
-    line-height: 1.2; font-weight: 400;
-  }
-  .featured-meta {
-    font-size: 13px; color: var(--ivory-dim);
-    margin-top: 12px; font-style: italic;
-  }
-
-  /* big kanji overlay on featured */
-  .featured-kanji-bg {
-    position: absolute; right: -20px; top: -20px;
-    font-family: 'Noto Sans JP', sans-serif;
-    font-size: 200px; font-weight: 100;
-    color: transparent;
-    -webkit-text-stroke: 1px rgba(200,169,110,0.06);
-    pointer-events: none; line-height: 1;
-    user-select: none;
-  }
-
-  .featured-side {
-    display: flex; flex-direction: column; gap: 2px;
-  }
-  .featured-mini {
-    flex: 1;
-    background: var(--ash);
-    border: 1px solid var(--border-dim);
-    padding: 36px 32px;
-    cursor: crosshair; position: relative; overflow: hidden;
-    transition: border-color 0.4s, background 0.4s;
-  }
-  .featured-mini:hover {
-    border-color: var(--blood-bright);
-    background: rgba(122,26,26,0.05);
-  }
-  .featured-mini-num {
-    font-family: 'Cinzel', serif;
-    font-size: 7px; letter-spacing: 0.4em;
-    color: var(--gold-dim); margin-bottom: 16px; display: block;
-  }
-  .featured-mini-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 22px; font-weight: 300;
-    color: var(--ivory); font-style: italic;
-    line-height: 1.3;
-  }
-
-  /* ── MANIFESTO STRIP ── */
-  #manifesto {
-    border-top: 1px solid var(--border-dim);
-    border-bottom: 1px solid var(--border-dim);
-    padding: 80px 60px;
-    background: var(--blood);
-    overflow: hidden; position: relative;
-  }
-  #manifesto::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: repeating-linear-gradient(
-      90deg,
-      rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 1px,
-      transparent 1px, transparent 60px
-    );
-    pointer-events: none;
-  }
-  .manifesto-text {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: clamp(32px, 5vw, 72px);
-    font-weight: 400; color: var(--ivory);
-    text-align: center; line-height: 1.2;
-    position: relative; z-index: 1;
-  }
-  .manifesto-text em {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic; color: rgba(232,223,200,0.6);
-    font-size: 0.8em;
-  }
-
-  /* ── FOOTER ── */
-  footer {
-    background: var(--ink);
-    padding: 60px;
-    border-top: 1px solid var(--border-dim);
-  }
-  .footer-inner {
-    max-width: 1400px; margin: 0 auto;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .footer-mark {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 14px; color: var(--gold);
-    letter-spacing: 0.1em;
-  }
-  .footer-links {
-    display: flex; gap: 40px;
-  }
-  .footer-links a {
-    font-family: 'Cinzel', serif;
-    font-size: 8px; letter-spacing: 0.4em;
-    text-transform: uppercase; color: var(--ivory-dim);
-    text-decoration: none; transition: color 0.3s;
-  }
-  .footer-links a:hover { color: var(--gold); }
-  .footer-copy {
-    font-family: 'Cinzel', serif;
-    font-size: 7px; letter-spacing: 0.35em;
-    text-transform: uppercase; color: rgba(200,169,110,0.2);
-  }
-
-  /* ── REVEAL ANIMATION ── */
-  .reveal {
-    opacity: 0; transform: translateY(40px);
-    transition: opacity 0.9s cubic-bezier(0.2,0,0,1), transform 0.9s cubic-bezier(0.2,0,0,1);
-  }
-  .reveal.visible { opacity: 1; transform: translateY(0); }
-  .reveal-delay-1 { transition-delay: 0.1s; }
-  .reveal-delay-2 { transition-delay: 0.2s; }
-  .reveal-delay-3 { transition-delay: 0.35s; }
-  .reveal-delay-4 { transition-delay: 0.5s; }
-  .reveal-delay-5 { transition-delay: 0.65s; }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 900px) {
-    nav { padding: 20px 24px; }
-    .nav-links { gap: 28px; }
-    .hero-content { padding: 0 24px 60px; }
-    .blade-divider { padding: 0 24px; }
-    .philosophy-inner { grid-template-columns: 1fr; gap: 48px; padding: 0 24px; }
-    .disciplines-inner, .featured-inner { padding: 0 24px; }
-    .disc-list { grid-template-columns: 1fr; }
-    .featured-grid { grid-template-columns: 1fr; }
-    .footer-inner { flex-direction: column; gap: 32px; text-align: center; }
-    .footer-links { flex-wrap: wrap; justify-content: center; }
-    #manifesto { padding: 60px 24px; }
-    footer { padding: 48px 24px; }
-  }
+*{margin:0;padding:0;box-sizing:border-box}
+body{overflow:hidden;background:#000;font-family:'Segoe UI',sans-serif;cursor:crosshair}
+canvas{display:block}
+#ui{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:10;text-align:center;pointer-events:none}
+#depth{color:rgba(0,255,255,.7);font-size:.75rem;letter-spacing:4px;text-transform:uppercase;text-shadow:0 0 15px rgba(0,255,255,.3)}
+#hint{color:rgba(255,255,255,.35);font-size:.65rem;letter-spacing:2px;margin-top:8px}
+#title{position:fixed;top:30px;left:50%;transform:translateX(-50%);z-index:10;color:rgba(0,255,255,.5);font-size:.8rem;letter-spacing:6px;text-transform:uppercase;pointer-events:none;text-shadow:0 0 20px rgba(0,255,255,.2)}
+.bloom{position:fixed;inset:0;pointer-events:none;z-index:5;background:radial-gradient(circle,rgba(0,150,255,.04) 0%,transparent 70%);mix-blend-mode:screen;animation:bp 5s ease-in-out infinite}
+@keyframes bp{0%,100%{opacity:.4}50%{opacity:1}}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:4;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.6) 100%)}
+#hand-video{display:none}
+#gesture{position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:10;color:rgba(0,255,255,.5);font-size:.7rem;letter-spacing:3px;pointer-events:none;text-shadow:0 0 10px rgba(0,255,255,.2)}
 </style>
 </head>
 <body>
-
-<!-- NAV -->
-<nav id="mainNav">
-  <div class="nav-mark">鋒 Flux Creators</div>
-  <div class="nav-links">
-    <a href="#philosophy">Philosophy</a>
-    <a href="#disciplines">Disciplines</a>
-    <a href="#featured">Works</a>
-    <a href="#">Contact</a>
-  </div>
-</nav>
-
-<!-- HERO -->
-<section id="hero">
-  <div class="ink-wash ink-wash-1"></div>
-  <div class="ink-wash ink-wash-2"></div>
-  <div class="katana-line"></div>
-  <div class="hero-kanji">刃</div>
-  <div class="hero-bg"></div>
-
-  <div class="hero-content">
-    <p class="hero-eyebrow">Flux Creators · The Way of the Lens · 映像の道</p>
-    <h1 class="hero-title">
-      The Blade<br>
-      <em>never forgets</em>
-    </h1>
-    <p class="hero-sub">An experimental studio forged in discipline and shadow — where cinema meets the ancient art of precision.</p>
-    <div class="hero-cta-row">
-      <a href="#philosophy" class="btn-primary">Enter the Dōjō</a>
-      <a href="#featured" class="btn-ghost">View the Scroll</a>
-    </div>
-  </div>
-
-  <div class="scroll-hint">
-    <span>Scroll</span>
-    <div class="scroll-line"></div>
-  </div>
-</section>
-
-<!-- DIVIDER -->
-<div class="blade-divider" style="padding-top:0; padding-bottom:0; height:1px; margin:0; max-width:100%;">
-  <div style="flex:1; height:1px; background:linear-gradient(90deg, var(--ink), var(--border-dim), var(--ink));"></div>
+<div class="bloom"></div>
+<div class="vignette"></div>
+<div id="title">✦ FRACTAL COSMOS ✦</div>
+<div id="ui">
+<div id="depth">DEPTH: 0 — UNIVERSE</div>
+<div id="hint">CLICK OR OPEN PALM TO DIVE · FIST TO GO BACK · PINCH TO ZOOM</div>
 </div>
-
-<!-- PHILOSOPHY -->
-<section id="philosophy">
-  <div class="philosophy-inner">
-    <div class="philosophy-left">
-      <span class="section-tag reveal">01 — Philosophy</span>
-      <span class="section-number reveal reveal-delay-1">一</span>
-      <h2 class="section-title reveal reveal-delay-2">
-        Master of<br>
-        <em>image and shadow</em>
-      </h2>
-      <div class="stat-strip reveal reveal-delay-3">
-        <div class="stat-item">
-          <span class="stat-num">4</span>
-          <span class="stat-label">Years of Steel</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-num">37</span>
-          <span class="stat-label">Films Forged</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-num">12</span>
-          <span class="stat-label">Studios</span>
-        </div>
-      </div>
-    </div>
-    <div class="philosophy-body reveal reveal-delay-2">
-      <p>I am <strong>Hitin Banga</strong> — a self-taught director drawn to the silence between frames. Like the samurai who finds truth in stillness before the strike, I seek the precise moment when story becomes emotion.</p>
-      <p>Four years spent at Parallax, Zenith, and the frontiers of independent cinema have forged a singular belief: that <strong>the most powerful images are those carved from restraint</strong> — not abundance. Every cut is a decision. Every frame, a commitment.</p>
-      <p>My practice spans visual effects, narrative architecture, and the invisible craft of rhythm — the tension a samurai holds before the blade moves. <strong>Digital artifacts can possess the soul of celluloid.</strong> This is the dōjō where that truth is tested.</p>
-    </div>
-  </div>
-</section>
-
-<!-- DISCIPLINES -->
-<section id="disciplines">
-  <div class="disciplines-inner">
-    <div class="disciplines-header">
-      <div>
-        <span class="section-tag reveal">02 — Disciplines</span>
-        <h2 class="section-title reveal reveal-delay-1" style="margin-bottom:0;">The Five<br><em>schools of sight</em></h2>
-      </div>
-      <p style="font-size:14px; color:var(--ivory-dim); max-width:280px; line-height:1.7; font-style:italic;" class="reveal reveal-delay-2">
-        Each discipline a kata. Practiced until it disappears into instinct.
-      </p>
-    </div>
-
-    <div class="disc-list">
-      <!-- 1 -->
-      <div class="disc-card reveal">
-        <span class="disc-kanji">映</span>
-        <span class="disc-num">01 — Shōen</span>
-        <div class="disc-title">Cinematography</div>
-        <p class="disc-desc">The grammar of light and shadow. Every composition a haiku — economical, weighted, irreversible.</p>
-        <div class="disc-footer">
-          <span class="disc-tag">Visual Language</span>
-          <div class="disc-arrow"></div>
-        </div>
-      </div>
-      <!-- 2 -->
-      <div class="disc-card reveal reveal-delay-1">
-        <span class="disc-kanji">語</span>
-        <span class="disc-num">02 — Monogatari</span>
-        <div class="disc-title">Narrative Design</div>
-        <p class="disc-desc">Story is the blade. Structure is the hand that guides it. We build worlds with the patience of a swordsmith.</p>
-        <div class="disc-footer">
-          <span class="disc-tag">Story Architecture</span>
-          <div class="disc-arrow"></div>
-        </div>
-      </div>
-      <!-- 3 -->
-      <div class="disc-card reveal reveal-delay-2">
-        <span class="disc-kanji">幻</span>
-        <span class="disc-num">03 — Maboroshi</span>
-        <div class="disc-title">Visual Effects</div>
-        <p class="disc-desc">Illusion as discipline. Digital forces shaped with the same rigor as a brush on washi paper.</p>
-        <div class="disc-footer">
-          <span class="disc-tag">Digital Alchemy</span>
-          <div class="disc-arrow"></div>
-        </div>
-      </div>
-      <!-- 4 -->
-      <div class="disc-card reveal reveal-delay-3">
-        <span class="disc-kanji">彩</span>
-        <span class="disc-num">04 — Irodori</span>
-        <div class="disc-title">Color Grading</div>
-        <p class="disc-desc">The emotional temperature of a scene lives in its palette. We grade with intention, not correction.</p>
-        <div class="disc-footer">
-          <span class="disc-tag">Chromatic Mastery</span>
-          <div class="disc-arrow"></div>
-        </div>
-      </div>
-      <!-- 5 -->
-      <div class="disc-card reveal reveal-delay-4">
-        <span class="disc-kanji">間</span>
-        <span class="disc-num">05 — Ma</span>
-        <div class="disc-title">Web & Interface</div>
-        <p class="disc-desc">Ma — the art of the interval. Negative space as meaning. Digital surfaces designed to breathe.</p>
-        <div class="disc-footer">
-          <span class="disc-tag">Digital Presence</span>
-          <div class="disc-arrow"></div>
-        </div>
-      </div>
-      <!-- 6 -->
-      <div class="disc-card reveal reveal-delay-5" style="background:rgba(122,26,26,0.08); border-color:rgba(122,26,26,0.3);">
-        <span class="disc-kanji" style="color:rgba(160,32,32,0.25);">道</span>
-        <span class="disc-num" style="color:var(--blood-bright);">06 — Michi</span>
-        <div class="disc-title">The Open Path</div>
-        <p class="disc-desc">Some projects defy category. If you carry a vision that doesn't fit the scroll, we forge a new one together.</p>
-        <div class="disc-footer">
-          <span class="disc-tag" style="color:var(--blood-bright);">Collaboration</span>
-          <div class="disc-arrow" style="background:var(--blood-bright);"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FEATURED WORKS -->
-<section id="featured">
-  <div class="featured-inner">
-    <div class="disciplines-header reveal">
-      <div>
-        <span class="section-tag">03 — Selected Works</span>
-        <h2 class="section-title" style="margin-bottom:0;">From the<br><em>archive of shadows</em></h2>
-      </div>
-      <a href="#" class="btn-ghost" style="align-self:flex-end;">Full Reel</a>
-    </div>
-
-    <div class="featured-grid">
-      <div class="featured-main reveal">
-        <div class="featured-kanji-bg">影</div>
-        <div class="featured-main-inner">
-          <span class="featured-tag">Featured · Short Film · 2024</span>
-          <div class="featured-title">Kage no Shita<br><em style="font-family:'Cormorant Garamond',serif; font-size:0.75em; font-weight:300; color:var(--ivory-dim);">Beneath the Shadow</em></div>
-          <p class="featured-meta">Parallax Studios · 18 min · Winner, Independent Visions</p>
-        </div>
-      </div>
-      <div class="featured-side">
-        <div class="featured-mini reveal reveal-delay-1">
-          <span class="featured-mini-num">02 · VFX Short · 2023</span>
-          <div class="featured-mini-title">The Last<br>Signal Fire</div>
-          <p style="font-size:12px; color:var(--ivory-dim); margin-top:12px; font-style:italic;">Zenith Labs · Digital series pilot</p>
-        </div>
-        <div class="featured-mini reveal reveal-delay-2">
-          <span class="featured-mini-num">03 · Brand Film · 2023</span>
-          <div class="featured-mini-title">Mizu<br>Collective</div>
-          <p style="font-size:12px; color:var(--ivory-dim); margin-top:12px; font-style:italic;">Independent · Corporate identity film</p>
-        </div>
-        <div class="featured-mini reveal reveal-delay-3">
-          <span class="featured-mini-num">04 · Web Design · 2024</span>
-          <div class="featured-mini-title">Ronin<br>Creative Agency</div>
-          <p style="font-size:12px; color:var(--ivory-dim); margin-top:12px; font-style:italic;">UI/UX · Narrative interface design</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- MANIFESTO -->
-<section id="manifesto">
-  <div class="manifesto-text reveal">
-    The sword is only as true<br>
-    <em>as the hand that holds it.</em>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-inner">
-    <div class="footer-mark">鋒 Flux Creators</div>
-    <div class="footer-links">
-      <a href="#">Privacy</a>
-      <a href="#">Terms</a>
-      <a href="#">Instagram</a>
-      <a href="#">Inquiries</a>
-    </div>
-    <p class="footer-copy">© 2024 Flux Creators · All Rights Reserved</p>
-  </div>
-</footer>
+<div id="gesture">✋ AWAITING HAND...</div>
+<video id="hand-video" playsinline></video>
 
 <script>
-  // Nav scroll
-  const nav = document.getElementById('mainNav');
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 60);
-  });
+const depthNames = ['UNIVERSE','GALAXY','SOLAR SYSTEM','PLANET','MOON','ATOM','QUARK','STRING','∞'];
+const palettes = [
+{core:[0,.6,1],ring:[0,.9,1],bg:[.02,.02,.08]},
+{core:[.8,.2,1],ring:[1,.3,.8],bg:[.05,.01,.06]},
+{core:[1,.5,.1],ring:[1,.8,.2],bg:[.06,.03,.01]},
+{core:[.1,1,.5],ring:[.2,1,.8],bg:[.01,.05,.03]},
+{core:[1,.2,.2],ring:[1,.5,.3],bg:[.06,.01,.01]},
+{core:[.3,.5,1],ring:[.5,.7,1],bg:[.01,.02,.06]},
+{core:[1,.9,.2],ring:[1,1,.5],bg:[.06,.05,.01]},
+{core:[.5,1,1],ring:[.7,1,.9],bg:[.02,.05,.05]},
+];
 
-  // Reveal on scroll
-  const reveals = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        observer.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.1 });
-  reveals.forEach(el => observer.observe(el));
+let scene, camera, renderer, raycaster, mouse;
+let currentSystem = null;
+let depthLevel = 0;
+let systemStack = [];
+let time = 0;
+let targetCamZ = 20;
+let transitioning = false;
+let handGroup3D, handSkeleton3D, handPoints3D;
+let gestureState = 'none';
+let gestureCooldown = 0;
+let lastPinchDist = 0;
+
+function createPlanetSystem(depth, parentPos) {
+const pal = palettes[depth % palettes.length];
+const group = new THREE.Group();
+if (parentPos) group.position.copy(parentPos);
+
+// Core planet — sphere of particles
+const coreCount = 8000 + depth * 2000;
+const coreGeo = new THREE.BufferGeometry();
+const cPos = new Float32Array(coreCount * 3);
+const cCol = new Float32Array(coreCount * 3);
+const cSizes = new Float32Array(coreCount);
+const radius = 3;
+
+for (let i = 0; i < coreCount; i++) {
+const theta = Math.acos(2 * Math.random() - 1);
+const phi = Math.random() * Math.PI * 2;
+const r = radius * (0.85 + Math.random() * 0.15);
+cPos[i*3] = r * Math.sin(theta) * Math.cos(phi);
+cPos[i*3+1] = r * Math.sin(theta) * Math.sin(phi);
+cPos[i*3+2] = r * Math.cos(theta);
+
+const variation = Math.random() * 0.3;
+cCol[i*3] = pal.core[0] + variation * 0.2;
+cCol[i*3+1] = pal.core[1] + variation * 0.3;
+cCol[i*3+2] = pal.core[2] + variation * 0.2;
+cSizes[i] = 0.03 + Math.random() * 0.04;
+}
+coreGeo.setAttribute('position', new THREE.BufferAttribute(cPos, 3));
+coreGeo.setAttribute('color', new THREE.BufferAttribute(cCol, 3));
+
+const coreMat = new THREE.PointsMaterial({
+size: 0.05, vertexColors: true, transparent: true,
+opacity: 0.9, blending: THREE.AdditiveBlending
+});
+const core = new THREE.Points(coreGeo, coreMat);
+core.userData = { type: 'core', depth: depth };
+group.add(core);
+
+// Inner glow sphere
+const glowGeo = new THREE.SphereGeometry(radius * 0.6, 32, 32);
+const glowMat = new THREE.MeshBasicMaterial({
+color: new THREE.Color(pal.core[0], pal.core[1], pal.core[2]),
+transparent: true, opacity: 0.08, blending: THREE.AdditiveBlending
+});
+group.add(new THREE.Mesh(glowGeo, glowMat));
+
+// Rings
+const ringCount = 10000;
+const ringGeo = new THREE.BufferGeometry();
+const rPos = new Float32Array(ringCount * 3);
+const rCol = new Float32Array(ringCount * 3);
+for (let i = 0; i < ringCount; i++) {
+const r = 5 + Math.random() * 3;
+const a = Math.random() * Math.PI * 2;
+rPos[i*3] = Math.cos(a) * r;
+rPos[i*3+1] = (Math.random() - 0.5) * 0.15;
+rPos[i*3+2] = Math.sin(a) * r;
+
+const t = a / (Math.PI * 2);
+rCol[i*3] = pal.ring[0] * (0.5 + t * 0.5);
+rCol[i*3+1] = pal.ring[1] * (0.3 + t * 0.7);
+rCol[i*3+2] = pal.ring[2] * (0.6 + (1-t) * 0.4);
+}
+ringGeo.setAttribute('position', new THREE.BufferAttribute(rPos, 3));
+ringGeo.setAttribute('color', new THREE.BufferAttribute(rCol, 3));
+const ringMat = new THREE.PointsMaterial({
+size: 0.03, vertexColors: true, transparent: true,
+opacity: 0.6, blending: THREE.AdditiveBlending
+});
+const rings = new THREE.Points(ringGeo, ringMat);
+rings.rotation.x = Math.PI / 3 + (depth * 0.2);
+group.add(rings);
+
+// Mini orbiting planets (clickable!)
+const miniCount = 5 + Math.floor(Math.random() * 4);
+for (let m = 0; m < miniCount; m++) {
+const orbitR = 6 + m * 1.8 + Math.random();
+const angle = Math.random() * Math.PI * 2;
+const miniGroup = new THREE.Group();
+
+// Mini planet sphere particles
+const mCount = 800;
+const mGeo = new THREE.BufferGeometry();
+const mPos = new Float32Array(mCount * 3);
+const mCol = new Float32Array(mCount * 3);
+const mRadius = 0.3 + Math.random() * 0.4;
+
+const mPal = palettes[(depth + m + 1) % palettes.length];
+for (let i = 0; i < mCount; i++) {
+const t = Math.acos(2 * Math.random() - 1);
+const p = Math.random() * Math.PI * 2;
+mPos[i*3] = mRadius * Math.sin(t) * Math.cos(p);
+mPos[i*3+1] = mRadius * Math.sin(t) * Math.sin(p);
+mPos[i*3+2] = mRadius * Math.cos(t);
+mCol[i*3] = mPal.core[0] + Math.random() * 0.2;
+mCol[i*3+1] = mPal.core[1] + Math.random() * 0.2;
+mCol[i*3+2] = mPal.core[2] + Math.random() * 0.2;
+}
+mGeo.setAttribute('position', new THREE.BufferAttribute(mPos, 3));
+mGeo.setAttribute('color', new THREE.BufferAttribute(mCol, 3));
+
+const mini = new THREE.Points(mGeo, new THREE.PointsMaterial({
+size: 0.04, vertexColors: true, transparent: true,
+opacity: 0.85, blending: THREE.AdditiveBlending
+}));
+mini.userData = { type: 'mini', depth: depth, orbitR, orbitAngle: angle, orbitSpeed: 0.1 + Math.random() * 0.3, mRadius };
+
+// Orbit ring line
+const orbitGeo = new THREE.BufferGeometry();
+const orbitPts = [];
+for (let i = 0; i <= 128; i++) {
+const a = (i / 128) * Math.PI * 2;
+orbitPts.push(Math.cos(a) * orbitR, 0, Math.sin(a) * orbitR);
+}
+orbitGeo.setAttribute('position', new THREE.Float32BufferAttribute(orbitPts, 3));
+const orbitLine = new THREE.Line(orbitGeo, new THREE.LineBasicMaterial({
+color: new THREE.Color(mPal.ring[0]*.3, mPal.ring[1]*.3, mPal.ring[2]*.3),
+transparent: true, opacity: 0.15
+}));
+orbitLine.rotation.x = Math.PI / 3 + (depth * 0.2);
+group.add(orbitLine);
+
+miniGroup.add(mini);
+miniGroup.position.set(Math.cos(angle) * orbitR, 0, Math.sin(angle) * orbitR);
+group.add(miniGroup);
+}
+
+// Store refs
+group.userData = { core, rings, depth, pal };
+return group;
+}
+
+function init() {
+scene = new THREE.Scene();
+camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.01, 2000);
+camera.position.z = 20;
+
+renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(devicePixelRatio);
+document.body.appendChild(renderer.domElement);
+
+raycaster = new THREE.Raycaster();
+raycaster.params.Points.threshold = 0.5;
+mouse = new THREE.Vector2();
+
+// Stars
+const starGeo = new THREE.BufferGeometry();
+const sp = new Float32Array(8000 * 3), sc = new Float32Array(8000 * 3);
+for (let i = 0; i < 8000; i++) {
+sp[i*3] = (Math.random()-.5)*1500; sp[i*3+1] = (Math.random()-.5)*1500; sp[i*3+2] = (Math.random()-.5)*1500;
+const b = .5 + Math.random()*.5;
+sc[i*3] = b; sc[i*3+1] = b * (.8+Math.random()*.2); sc[i*3+2] = b;
+}
+starGeo.setAttribute('position', new THREE.BufferAttribute(sp, 3));
+starGeo.setAttribute('color', new THREE.BufferAttribute(sc, 3));
+scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({size: .4, vertexColors: true, transparent: true, opacity: .7, blending: THREE.AdditiveBlending})));
+
+// Initial system
+currentSystem = createPlanetSystem(0);
+scene.add(currentSystem);
+
+// Events
+addEventListener('resize', () => {
+camera.aspect = innerWidth / innerHeight;
+camera.updateProjectionMatrix();
+renderer.setSize(innerWidth, innerHeight);
+});
+
+addEventListener('wheel', e => {
+targetCamZ = Math.max(5, Math.min(60, targetCamZ + e.deltaY * 0.02));
+});
+
+addEventListener('click', onClickDive);
+addEventListener('contextmenu', e => { e.preventDefault(); onZoomOut(); });
+
+// 3D hand skeleton
+handGroup3D = new THREE.Group();
+const skGeo = new THREE.BufferGeometry();
+handSkeleton3D = new THREE.LineSegments(skGeo, new THREE.LineBasicMaterial({color:0x00ccff,transparent:true,opacity:.7}));
+const hpGeo = new THREE.BufferGeometry();
+handPoints3D = new THREE.Points(hpGeo, new THREE.PointsMaterial({color:0x00ffff,size:.12,transparent:true,blending:THREE.AdditiveBlending}));
+handGroup3D.add(handSkeleton3D);
+handGroup3D.add(handPoints3D);
+handGroup3D.position.set(0,0,-10);
+handGroup3D.visible = false;
+camera.add(handGroup3D);
+scene.add(camera);
+
+// Start hand tracking
+startHandTracking();
+
+animate();
+}
+
+const handConns = [[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[0,9],[9,10],[10,11],[11,12],[0,13],[13,14],[14,15],[15,16],[0,17],[17,18],[18,19],[19,20],[5,9],[9,13],[13,17]];
+
+function isHandFist(lm) {
+const tips=[8,12,16,20], joints=[6,10,14,18];
+let closed=0;
+for(let i=0;i<4;i++) if(lm[tips[i]].y > lm[joints[i]].y) closed++;
+return closed >= 3;
+}
+
+function isHandOpen(lm) {
+const tips=[8,12,16,20], joints=[6,10,14,18];
+let open=0;
+for(let i=0;i<4;i++) if(lm[tips[i]].y < lm[joints[i]].y) open++;
+return open >= 4;
+}
+
+function getPinchDist(lm) {
+return Math.hypot(lm[4].x - lm[8].x, lm[4].y - lm[8].y);
+}
+
+async function startHandTracking() {
+const video = document.getElementById('hand-video');
+const hands = new Hands({locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`});
+hands.setOptions({maxNumHands:1, modelComplexity:1, minDetectionConfidence:.7, minTrackingConfidence:.7});
+
+hands.onResults(results => {
+if(gestureCooldown > 0) gestureCooldown -= 0.016;
+const gEl = document.getElementById('gesture');
+
+if(results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+const lm = results.multiHandLandmarks[0];
+handGroup3D.visible = true;
+
+// Update 3D hand skeleton
+const positions = [], linePositions = [];
+lm.forEach(l => {
+positions.push(((1-l.x)-.5)*15, -(l.y-.5)*10, 0);
+});
+handConns.forEach(([s,e]) => {
+linePositions.push(positions[s*3],positions[s*3+1],positions[s*3+2]);
+linePositions.push(positions[e*3],positions[e*3+1],positions[e*3+2]);
+});
+handPoints3D.geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions,3));
+handSkeleton3D.geometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions,3));
+
+// Pinch zoom
+const pinch = getPinchDist(lm);
+if(lastPinchDist > 0) {
+const delta = (pinch - lastPinchDist) * 80;
+targetCamZ = Math.max(5, Math.min(60, targetCamZ - delta));
+}
+lastPinchDist = pinch;
+
+// Gesture detection
+const fist = isHandFist(lm);
+const open = isHandOpen(lm);
+
+if(open && gestureCooldown <= 0) {
+gEl.textContent = '✋ PALM OPEN — DIVING IN';
+// Simulate click at center to dive in
+if(!transitioning) {
+mouse.x = ((1-lm[9].x) - 0.5) * 2;
+mouse.y = -(lm[9].y - 0.5) * 2;
+raycaster.setFromCamera(mouse, camera);
+const hits = raycaster.intersectObjects(currentSystem.children, true);
+if(hits.length > 0) {
+gestureCooldown = 2;
+diveInto(hits[0].point);
+}
+}
+} else if(fist && gestureCooldown <= 0) {
+gEl.textContent = '✊ FIST — ZOOMING OUT';
+gestureCooldown = 2;
+onZoomOut();
+} else if(gestureCooldown <= 0) {
+gEl.textContent = '👌 PINCH TO ZOOM';
+}
+} else {
+handGroup3D.visible = false;
+lastPinchDist = 0;
+gEl.textContent = '✋ AWAITING HAND...';
+}
+});
+
+if(typeof Camera !== 'undefined') {
+new Camera(video, {onFrame: async()=>{await hands.send({image:video})}, width:640, height:480}).start();
+} else {
+try {
+const stream = await navigator.mediaDevices.getUserMedia({video:{width:640,height:480}});
+video.srcObject = stream;
+video.onloadedmetadata = () => {
+video.play();
+const pf = async()=>{ await hands.send({image:video}); requestAnimationFrame(pf); };
+pf();
+};
+} catch(e) { console.log('No camera'); }
+}
+}
+
+function diveInto(hitPoint) {
+if(transitioning) return;
+transitioning = true;
+systemStack.push({ system: currentSystem, camZ: camera.position.z, depth: depthLevel });
+depthLevel++;
+const newSystem = createPlanetSystem(depthLevel, hitPoint);
+newSystem.scale.set(0.01, 0.01, 0.01);
+scene.add(newSystem);
+const startZ = camera.position.z;
+const oldSystem = currentSystem;
+let progress = 0;
+function transAnim() {
+progress += 0.02;
+const t = Math.min(1, progress);
+const ease = t < .5 ? 2*t*t : -1+(4-2*t)*t;
+camera.position.x = THREE.MathUtils.lerp(0, hitPoint.x, ease * 0.3);
+camera.position.y = THREE.MathUtils.lerp(0, hitPoint.y, ease * 0.3);
+camera.position.z = THREE.MathUtils.lerp(startZ, 20, ease);
+camera.lookAt(THREE.MathUtils.lerp(0, hitPoint.x, ease), THREE.MathUtils.lerp(0, hitPoint.y, ease), 0);
+const s = 0.01 + ease * 0.99;
+newSystem.scale.set(s, s, s);
+oldSystem.children.forEach(c => { if (c.material) c.material.opacity = 1 - ease; });
+if (t < 1) { requestAnimationFrame(transAnim); }
+else {
+scene.remove(oldSystem);
+currentSystem = newSystem;
+newSystem.position.set(0,0,0);
+camera.position.set(0,0,20);
+camera.lookAt(0,0,0);
+targetCamZ = 20;
+transitioning = false;
+updateUI();
+}
+}
+transAnim();
+updateUI();
+}
+
+function onClickDive(e) {
+if (transitioning) return;
+mouse.x = (e.clientX / innerWidth) * 2 - 1;
+mouse.y = -(e.clientY / innerHeight) * 2 + 1;
+raycaster.setFromCamera(mouse, camera);
+const hits = raycaster.intersectObjects(currentSystem.children, true);
+if (hits.length > 0) diveInto(hits[0].point);
+}
+
+function onZoomOut() {
+if (transitioning || systemStack.length === 0) return;
+transitioning = true;
+
+const prev = systemStack.pop();
+depthLevel = prev.depth;
+
+const oldSystem = currentSystem;
+scene.add(prev.system);
+prev.system.children.forEach(c => { if (c.material) c.material.opacity = 1; });
+
+let progress = 0;
+function outAnim() {
+progress += 0.025;
+const t = Math.min(1, progress);
+const ease = t < .5 ? 2*t*t : -1+(4-2*t)*t;
+
+const s = 1 - ease * 0.99;
+oldSystem.scale.set(s, s, s);
+camera.position.z = THREE.MathUtils.lerp(camera.position.z, prev.camZ, 0.05);
+
+if (t < 1) {
+requestAnimationFrame(outAnim);
+} else {
+scene.remove(oldSystem);
+currentSystem = prev.system;
+camera.position.set(0, 0, prev.camZ);
+camera.lookAt(0, 0, 0);
+targetCamZ = prev.camZ;
+transitioning = false;
+updateUI();
+}
+}
+outAnim();
+updateUI();
+}
+
+function updateUI() {
+const name = depthNames[Math.min(depthLevel, depthNames.length - 1)];
+document.getElementById('depth').textContent = `DEPTH: ${depthLevel} — ${name}`;
+document.getElementById('depth').style.color = depthLevel > 3
+? `rgba(255,${150-depthLevel*15},${100+depthLevel*10},.8)`
+: 'rgba(0,255,255,.7)';
+}
+
+function animate() {
+requestAnimationFrame(animate);
+time += 0.016;
+
+// Smooth camera zoom
+camera.position.z += (targetCamZ - camera.position.z) * 0.08;
+
+if (currentSystem && !transitioning) {
+const data = currentSystem.userData;
+
+// Rotate core planet
+if (data.core) data.core.rotation.y += 0.003;
+if (data.rings) data.rings.rotation.z += 0.002;
+
+// Animate color shift on core
+if (data.core) {
+const colors = data.core.geometry.attributes.color;
+const pal = data.pal;
+for (let i = 0; i < colors.count; i++) {
+const phase = time * 0.3 + i * 0.0005;
+colors.array[i*3] = pal.core[0] + Math.sin(phase) * 0.15;
+colors.array[i*3+1] = pal.core[1] + Math.sin(phase + 2) * 0.15;
+colors.array[i*3+2] = pal.core[2] + Math.sin(phase + 4) * 0.1;
+}
+colors.needsUpdate = true;
+}
+
+// Orbit mini planets
+currentSystem.children.forEach(child => {
+if (child.children) {
+child.children.forEach(sub => {
+if (sub.userData && sub.userData.type === 'mini') {
+const d = sub.userData;
+d.orbitAngle += d.orbitSpeed * 0.016;
+child.position.x = Math.cos(d.orbitAngle) * d.orbitR;
+child.position.z = Math.sin(d.orbitAngle) * d.orbitR;
+sub.rotation.y += 0.02;
+}
+});
+}
+});
+}
+
+renderer.render(scene, camera);
+}
+
+window.onload = init;
 </script>
 </body>
 </html>
