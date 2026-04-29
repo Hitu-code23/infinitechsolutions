@@ -747,35 +747,273 @@ function makeStarField(){
   return new THREE.Points(geo,mat);
 }
 
-// ─── MILKY WAY BAND ──────────────────────────────────────────────────────────
+// ─── ULTRA-REALISTIC MILKY WAY ───────────────────────────────────────────────
 function makeMilkyWay(){
-  const c=makeCanvas(2048,1024), ctx=c.getContext('2d'), w=c.width,h=c.height;
-  const r=rng(999);
+  // Step 1: paint a high-res equirectangular galaxy texture
+  const W=4096, H=2048;
+  const c=makeCanvas(W,H), ctx=c.getContext('2d'), w=c.width, h=c.height;
+  const r=rng(31415);
+
   ctx.fillStyle='#000000'; ctx.fillRect(0,0,w,h);
-  // Galaxy band
-  const gy=h*.5, gw=h*.28;
-  for(let i=0;i<5000;i++){
-    const x=r()*w, dy=(r()-.5)*gw*2;
-    const brightness=Math.exp(-dy*dy/(2*gw*gw*.4));
-    const lum=brightness*(.3+r()*.7);
-    if(lum<.05) continue;
-    const col=r()>.8?`rgba(220,200,255,${lum*.4})`:`rgba(255,248,230,${lum*.35})`;
-    ctx.fillStyle=col;
-    ctx.fillRect(x,gy+dy,r()*2+.5,r()*2+.5);
+
+  // ── Helper: equirectangular lon/lat → pixel ──────────────────────────────
+  // lon ∈ [-π, π], lat ∈ [-π/2, π/2]
+  const toXY=(lon,lat)=>[(lon/Math.PI*.5+.5)*w, (.5-lat/Math.PI)*h];
+
+  // ── 1. Deep-sky glow: very faint background luminosity along the plane ───
+  for(let pass=0;pass<3;pass++){
+    const cx=r()*w, cy=h*.5+(r()-.5)*h*.04;
+    const g=ctx.createRadialGradient(cx,cy,0,cx,cy,w*.55);
+    g.addColorStop(0,`rgba(60,50,80,0.018)`); g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
   }
-  // Nebula patches
-  for(let i=0;i<30;i++){
-    const x=r()*w, y=gy+(r()-.5)*gw;
-    const g=ctx.createRadialGradient(x,y,0,x,y,40+r()*120);
-    const col=r()>.6?[180,150,255]:r()>.3?[255,180,130]:[150,200,255];
-    g.addColorStop(0,`rgba(${col[0]},${col[1]},${col[2]},${.02+r()*.04})`);
+
+  // ── 2. Galactic diffuse glow (broad band) ───────────────────────────────
+  // The Milky Way's main band spans roughly ±15° galactic latitude
+  for(let i=0;i<8;i++){
+    const cx=r()*w, cy=h*.5+(r()-.5)*h*.015;
+    const g=ctx.createRadialGradient(cx,cy,0,cx,cy,w*.38);
+    g.addColorStop(0,'rgba(180,170,140,0.028)');
+    g.addColorStop(.3,'rgba(140,130,110,0.018)');
     g.addColorStop(1,'rgba(0,0,0,0)');
     ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
   }
+
+  // ── 3. Galactic core (Sagittarius direction) — very bright bulge ─────────
+  // Galactic centre: lon≈0° (centre of map), lat≈0°
+  const coreX=w*.5, coreY=h*.5;
+  // Outer warm halo
+  const outerHalo=ctx.createRadialGradient(coreX,coreY,0,coreX,coreY,w*.22);
+  outerHalo.addColorStop(0,'rgba(255,210,140,0.22)');
+  outerHalo.addColorStop(.15,'rgba(220,180,110,0.14)');
+  outerHalo.addColorStop(.4,'rgba(180,140,80,0.07)');
+  outerHalo.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=outerHalo; ctx.fillRect(0,0,w,h);
+
+  // Mid glow
+  const midGlow=ctx.createRadialGradient(coreX,coreY,0,coreX,coreY,w*.1);
+  midGlow.addColorStop(0,'rgba(255,230,180,0.55)');
+  midGlow.addColorStop(.3,'rgba(240,200,140,0.3)');
+  midGlow.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=midGlow; ctx.fillRect(0,0,w,h);
+
+  // Bright nucleus
+  const nucleus=ctx.createRadialGradient(coreX,coreY,0,coreX,coreY,w*.025);
+  nucleus.addColorStop(0,'rgba(255,248,230,0.95)');
+  nucleus.addColorStop(.4,'rgba(255,220,160,0.6)');
+  nucleus.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=nucleus; ctx.fillRect(0,0,w,h);
+
+  // Anti-centre (opposite side, faint)
+  const acX=w*0, acY=h*.5;
+  const acGlow=ctx.createRadialGradient(acX,acY,0,acX,acY,w*.12);
+  acGlow.addColorStop(0,'rgba(200,190,160,0.08)');
+  acGlow.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=acGlow; ctx.fillRect(0,0,w,h);
+  // Mirror at right edge
+  const acGlow2=ctx.createRadialGradient(w,acY,0,w,acY,w*.12);
+  acGlow2.addColorStop(0,'rgba(200,190,160,0.08)'); acGlow2.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=acGlow2; ctx.fillRect(0,0,w,h);
+
+  // ── 4. Spiral arm structure (painted as elongated bright clouds) ──────────
+  // Real Milky Way arms: Perseus, Carina-Sagittarius, Norma, Scutum-Centaurus
+  // We approximate them as offset bright clumps along the band
+  const arms=[
+    // [centreX fraction, centreY fraction, radiusX, radiusY, opacity, r,g,b]
+    // Carina-Sagittarius arm
+    {cx:.38,cy:.48,rx:.18,ry:.04,op:.12,col:[255,240,200]},
+    {cx:.62,cy:.52,rx:.16,ry:.04,op:.1, col:[240,225,185]},
+    // Perseus arm
+    {cx:.25,cy:.44,rx:.14,ry:.035,op:.08,col:[220,210,255]},
+    {cx:.75,cy:.56,rx:.12,ry:.03, op:.07,col:[220,210,255]},
+    // Norma arm
+    {cx:.55,cy:.46,rx:.1, ry:.03, op:.09,col:[255,230,190]},
+    // Scutum–Centaurus arm
+    {cx:.45,cy:.54,rx:.12,ry:.035,op:.09,col:[255,235,195]},
+    // Local arm (our neighbourhood — Sun is here, brighter)
+    {cx:.5, cy:.5, rx:.08,ry:.025,op:.13,col:[255,250,230]},
+    // Outer arms
+    {cx:.15,cy:.46,rx:.1, ry:.03, op:.05,col:[200,195,230]},
+    {cx:.85,cy:.54,rx:.1, ry:.03, op:.05,col:[200,195,230]},
+    {cx:.08,cy:.5, rx:.06,ry:.025,op:.04,col:[190,185,215]},
+    {cx:.92,cy:.5, rx:.06,ry:.025,op:.04,col:[190,185,215]},
+  ];
+  arms.forEach(a=>{
+    const px=a.cx*w, py=a.cy*h;
+    const g=ctx.createRadialGradient(px,py,0,px,py,a.rx*w);
+    g.addColorStop(0,`rgba(${a.col[0]},${a.col[1]},${a.col[2]},${a.op})`);
+    g.addColorStop(.5,`rgba(${a.col[0]},${a.col[1]},${a.col[2]},${a.op*.4})`);
+    g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=g;
+    ctx.save(); ctx.translate(px,py); ctx.scale(1,a.ry/a.rx);
+    ctx.beginPath(); ctx.arc(0,0,a.rx*w,0,Math.PI*2); ctx.restore(); ctx.fill();
+  });
+
+  // ── 5. HII regions / emission nebulae (red/pink blobs) ───────────────────
+  const hii=[
+    {cx:.42,cy:.49,r:.018,col:[255,80,80]},   // near galactic centre
+    {cx:.35,cy:.51,r:.012,col:[255,100,80]},
+    {cx:.58,cy:.5, r:.015,col:[255,90,90]},
+    {cx:.28,cy:.48,r:.01, col:[255,120,100]},
+    {cx:.65,cy:.52,r:.014,col:[255,85,85]},
+    {cx:.22,cy:.47,r:.009,col:[255,130,110]},
+    {cx:.78,cy:.53,r:.009,col:[255,130,110]},
+    {cx:.5, cy:.5, r:.022,col:[255,200,150]},  // Orion-ish direction
+  ];
+  hii.forEach(n=>{
+    const px=n.cx*w, py=n.cy*h, pr=n.r*w;
+    const g=ctx.createRadialGradient(px,py,0,px,py,pr);
+    g.addColorStop(0,`rgba(${n.col[0]},${n.col[1]},${n.col[2]},0.22)`);
+    g.addColorStop(.5,`rgba(${n.col[0]},${n.col[1]},${n.col[2]},0.08)`);
+    g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=g; ctx.save(); ctx.translate(px,py); ctx.scale(1.6,1);
+    ctx.beginPath(); ctx.arc(0,0,pr,0,Math.PI*2); ctx.restore(); ctx.fill();
+  });
+
+  // ── 6. Blue reflection / OB-star clusters ────────────────────────────────
+  const ob=[
+    {cx:.32,cy:.485,r:.014},{cx:.48,cy:.495,r:.01},{cx:.62,cy:.505,r:.012},
+    {cx:.18,cy:.476,r:.009},{cx:.72,cy:.514,r:.009},{cx:.55,cy:.49,r:.011},
+  ];
+  ob.forEach(n=>{
+    const px=n.cx*w, py=n.cy*h, pr=n.r*w;
+    const g=ctx.createRadialGradient(px,py,0,px,py,pr);
+    g.addColorStop(0,'rgba(160,190,255,0.18)'); g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=g; ctx.save(); ctx.translate(px,py); ctx.scale(2,1);
+    ctx.beginPath(); ctx.arc(0,0,pr,0,Math.PI*2); ctx.restore(); ctx.fill();
+  });
+
+  // ── 7. Dark dust lanes ───────────────────────────────────────────────────
+  // Great Rift runs from Cygnus to Centaurus, splitting the band
+  const dustLanes=[
+    // Great Rift (main dark lane)
+    {x1:.28,y1:.48, x2:.55,y2:.5,  w:h*.025, op:.35},
+    {x1:.55,y1:.5,  x2:.72,y2:.52, w:h*.02,  op:.28},
+    // Coalsack (near Southern Cross)
+    {x1:.34,y1:.505,x2:.38,y2:.51, w:h*.018, op:.45},
+    // Smaller rifts
+    {x1:.2, y1:.478,x2:.28,y2:.48, w:h*.012, op:.22},
+    {x1:.6, y1:.5,  x2:.68,y2:.51, w:h*.012, op:.2 },
+  ];
+  ctx.globalCompositeOperation='multiply';
+  dustLanes.forEach(dl=>{
+    const x1=dl.x1*w,y1=dl.y1*h,x2=dl.x2*w,y2=dl.y2*h;
+    const dx=x2-x1, dy=y2-y1, len=Math.hypot(dx,dy);
+    const nx=-dy/len, ny=dx/len;
+    const g=ctx.createLinearGradient(x1+nx*dl.w,y1+ny*dl.w,x1-nx*dl.w,y1-ny*dl.w);
+    g.addColorStop(0,'rgba(0,0,0,0)');
+    g.addColorStop(.4,`rgba(0,0,0,${dl.op})`);
+    g.addColorStop(.6,`rgba(0,0,0,${dl.op})`);
+    g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.strokeStyle=g; ctx.lineWidth=dl.w; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  });
+  ctx.globalCompositeOperation='source-over';
+
+  // ── 8. Dense star field concentrated along the band ──────────────────────
+  // Use Gaussian distribution in latitude around the galactic plane
+  for(let i=0;i<80000;i++){
+    // Box-Muller for Gaussian latitude
+    const u1=r(), u2=r();
+    const gauss=Math.sqrt(-2*Math.log(u1+1e-9))*Math.cos(2*Math.PI*u2);
+    const latFrac=gauss*.06; // std dev ~6% of height = ~11° latitude
+    const lonFrac=r();
+    const px=lonFrac*w;
+    const py=(0.5+latFrac)*h;
+    if(py<0||py>h) continue;
+
+    // Brightness: higher near centre and along plane
+    const distFromCentre=Math.abs(lonFrac-.5)*2; // 0=centre,1=edge
+    const distFromPlane=Math.abs(latFrac)/0.06;
+    const brightness=Math.exp(-distFromPlane*distFromPlane*.5)*(0.2+0.8*Math.exp(-distFromCentre*1.5));
+    const lum=brightness*(0.15+r()*0.85);
+    if(lum<0.04) continue;
+
+    const tint=r();
+    let cr,cg,cb;
+    if(tint>.88){cr=.82;cg=.88;cb=1;}      // blue-white (O/B)
+    else if(tint>.75){cr=1;cg=.97;cb=.82;} // yellow-white (F/G)
+    else if(tint>.62){cr=1;cg=.82;cb=.6;}  // orange (K)
+    else if(tint>.52){cr=1;cg=.65;cb=.45;} // red (M)
+    else{cr=1;cg=1;cb=1;}                  // white
+
+    const size=lum>.5 ? 1.2+r() : r()>.7 ? .9 : .5;
+    ctx.fillStyle=`rgba(${cr*255|0},${cg*255|0},${cb*255|0},${Math.min(lum*.9,.9)})`;
+    ctx.fillRect(px-size*.5,py-size*.5,size,size);
+  }
+
+  // ── 9. Bright named stars (as tiny glow points) ──────────────────────────
+  // Real galactic coords mapped roughly to equirectangular lon/lat
+  const brightStars=[
+    {name:'Sirius',   lonFrac:.23, latFrac:-.09, b:1.0,  col:[200,220,255]},
+    {name:'Canopus',  lonFrac:.36, latFrac:-.16, b:.85,  col:[220,230,255]},
+    {name:'Rigel',    lonFrac:.25, latFrac:-.1,  b:.8,   col:[180,200,255]},
+    {name:'Betelgeuse',lonFrac:.24,latFrac:-.08, b:.9,   col:[255,140,80]},
+    {name:'Vega',     lonFrac:.47, latFrac:.13,  b:.75,  col:[200,215,255]},
+    {name:'Capella',  lonFrac:.30, latFrac:.05,  b:.72,  col:[255,230,150]},
+    {name:'Arcturus', lonFrac:.43, latFrac:.33,  b:.78,  col:[255,180,100]},
+    {name:'Antares',  lonFrac:.50, latFrac:-.02, b:.82,  col:[255,80,60]},
+    {name:'Deneb',    lonFrac:.52, latFrac:.1,   b:.65,  col:[210,225,255]},
+    {name:'Spica',    lonFrac:.46, latFrac:.06,  b:.7,   col:[180,200,255]},
+    {name:'Fomalhaut',lonFrac:.60, latFrac:-.28, b:.65,  col:[220,230,255]},
+    {name:'Aldebaran',lonFrac:.26, latFrac:-.03, b:.68,  col:[255,170,90]},
+    {name:'Pollux',   lonFrac:.29, latFrac:.04,  b:.6,   col:[255,200,130]},
+    {name:'Procyon',  lonFrac:.27, latFrac:-.05, b:.7,   col:[255,245,210]},
+    {name:'Acrux',    lonFrac:.39, latFrac:-.1,  b:.75,  col:[200,220,255]},
+  ];
+  brightStars.forEach(s=>{
+    const px=(s.lonFrac)*w, py=(0.5+s.latFrac*.5)*h;
+    // Diffraction spike glow
+    const gr=ctx.createRadialGradient(px,py,0,px,py,12*s.b);
+    gr.addColorStop(0,`rgba(${s.col[0]},${s.col[1]},${s.col[2]},${s.b*.9})`);
+    gr.addColorStop(.4,`rgba(${s.col[0]},${s.col[1]},${s.col[2]},${s.b*.3})`);
+    gr.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=gr; ctx.beginPath(); ctx.arc(px,py,12*s.b,0,Math.PI*2); ctx.fill();
+    // Star point
+    ctx.fillStyle=`rgba(255,255,255,${s.b})`;
+    ctx.fillRect(px-1,py-1,2,2);
+  });
+
+  // ── 10. Large Magellanic Cloud (satellite galaxy) ─────────────────────────
+  // LMC: lon ≈ 0.73, lat ≈ -0.27
+  const lmcX=.73*w, lmcY=(0.5+.27*.5)*h;
+  const lmc=ctx.createRadialGradient(lmcX,lmcY,0,lmcX,lmcY,w*.04);
+  lmc.addColorStop(0,'rgba(255,245,220,0.5)'); lmc.addColorStop(.4,'rgba(240,225,195,0.2)');
+  lmc.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=lmc; ctx.save(); ctx.translate(lmcX,lmcY); ctx.scale(1.6,.8);
+  ctx.beginPath(); ctx.arc(0,0,w*.04,0,Math.PI*2); ctx.restore(); ctx.fill();
+
+  // Small Magellanic Cloud
+  const smcX=.76*w, smcY=(0.5+.33*.5)*h;
+  const smc=ctx.createRadialGradient(smcX,smcY,0,smcX,smcY,w*.02);
+  smc.addColorStop(0,'rgba(240,235,215,0.38)'); smc.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=smc; ctx.beginPath(); ctx.arc(smcX,smcY,w*.02,0,Math.PI*2); ctx.fill();
+
+  // ── 11. Andromeda Galaxy (M31) — faint smudge off-plane ─────────────────
+  const m31X=.22*w, m31Y=(0.5-.29*.5)*h;
+  const m31=ctx.createRadialGradient(m31X,m31Y,0,m31X,m31Y,w*.03);
+  m31.addColorStop(0,'rgba(255,248,230,0.22)'); m31.addColorStop(.5,'rgba(240,230,210,0.08)');
+  m31.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=m31; ctx.save(); ctx.translate(m31X,m31Y); ctx.scale(2.5,.7); ctx.rotate(.4);
+  ctx.beginPath(); ctx.arc(0,0,w*.028,0,Math.PI*2); ctx.restore(); ctx.fill();
+
+  // ── 12. Final: soft vignette at top/bottom (outside galaxy plane) ────────
+  const vTop=ctx.createLinearGradient(0,0,0,h*.25);
+  vTop.addColorStop(0,'rgba(0,0,0,0.55)'); vTop.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=vTop; ctx.fillRect(0,0,w,h*.25);
+  const vBot=ctx.createLinearGradient(0,h*.75,0,h);
+  vBot.addColorStop(0,'rgba(0,0,0,0)'); vBot.addColorStop(1,'rgba(0,0,0,0.55)');
+  ctx.fillStyle=vBot; ctx.fillRect(0,h*.75,w,h*.25);
+
   const tex=new THREE.CanvasTexture(c);
-  const geo=new THREE.SphereGeometry(1500,32,32);
-  const mat=new THREE.MeshBasicMaterial({map:tex,side:THREE.BackSide,transparent:true,opacity:.6,depthWrite:false});
-  return new THREE.Mesh(geo,mat);
+  tex.minFilter=THREE.LinearFilter; tex.magFilter=THREE.LinearFilter;
+  const geo=new THREE.SphereGeometry(1800,64,64);
+  const mat=new THREE.MeshBasicMaterial({map:tex,side:THREE.BackSide,transparent:true,opacity:.92,depthWrite:false});
+  const sphere=new THREE.Mesh(geo,mat);
+  // Tilt ~60° to position the band realistically (Milky Way is inclined ~60° to ecliptic)
+  sphere.rotation.x=THREE.MathUtils.degToRad(60);
+  sphere.rotation.z=THREE.MathUtils.degToRad(15);
+  return sphere;
 }
 
 // ─── SCENE BUILDERS ──────────────────────────────────────────────────────────
